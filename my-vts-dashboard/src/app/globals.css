@@ -1,20 +1,75 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  --background: #f4f4f5; /* zinc-100 */
+  --foreground: #09090b; /* zinc-950 */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --border-color: #e4e4e7; /* zinc-200 */
+  --sticky-bg: #ffffff;
+  --sticky-hover-bg: #f4f4f5;
+  --header-bg: #e4e4e7; /* zinc-200 */
+  
+  /* Arrived Status (Emerald) - Lebih kontras di mode terang */
+  --arrived-bg: rgba(16, 185, 129, 0.25);
+  --arrived-text: #065f46;
+  --arrived-sticky-bg: #a7f3d0;
+  --arrived-sticky-hover-bg: #6ee7b7;
+  
+  /* H-1 Status (Amber) */
+  --h1-bg: rgba(254, 243, 199, 0.55);
+  --h1-text: #92400e;
+  --h1-sticky-bg: #fef3c7;
+  --h1-sticky-hover-bg: #fde68a;
+}
+
+.dark {
   --background: #09090b; /* zinc-950 */
   --foreground: #f4f4f5; /* zinc-100 */
+  --card-bg: rgba(24, 24, 27, 0.6); /* zinc-900/60 */
+  --border-color: #27272a; /* zinc-800 */
+  --sticky-bg: #09090b;
+  --sticky-hover-bg: #18181b;
+  --header-bg: #09090b; /* zinc-950 */
+  
+  /* Arrived Status (Emerald) - Lebih kontras & hijau tua pekat di mode gelap */
+  --arrived-bg: rgba(6, 78, 59, 0.45);
+  --arrived-text: #34d399; /* emerald-300 (hijau terang menyala) */
+  --arrived-sticky-bg: #064e3b; /* emerald-900 (solid hijau tua) */
+  --arrived-sticky-hover-bg: #047857; /* emerald-700 (solid) */
+  
+  /* H-1 Status (Amber) */
+  --h1-bg: rgba(69, 26, 3, 0.35);
+  --h1-text: #fde68a;
+  --h1-sticky-bg: #451a03;
+  --h1-sticky-hover-bg: #78350f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card-bg);
+  --color-border: var(--border-color);
+  --color-sticky: var(--sticky-bg);
+  --color-sticky-hover: var(--sticky-hover-bg);
+  --color-header: var(--header-bg);
+  
+  --color-arrived: var(--arrived-bg);
+  --color-arrived-text: var(--arrived-text);
+  --color-arrived-sticky: var(--arrived-sticky-bg);
+  --color-arrived-sticky-hover: var(--arrived-sticky-hover-bg);
+  
+  --color-h1: var(--h1-bg);
+  --color-h1-text: var(--h1-text);
+  --color-h1-sticky: var(--h1-sticky-bg);
+  --color-h1-sticky-hover: var(--h1-sticky-hover-bg);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Scrollbar Premium untuk Tabel Horizontal */
@@ -24,12 +79,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b; /* zinc-950 */
+  background: var(--background);
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a; /* zinc-800 */
+  background: var(--border-color);
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -41,6 +98,6 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #18181b inset !important; /* zinc-900 */
-  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 30px var(--sticky-hover-bg) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
 }

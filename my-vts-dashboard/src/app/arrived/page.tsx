@@ -107,9 +107,7 @@ export default function ArrivedPage() {
 
   // Panggil modal konfirmasi pas diklik checkbox
   const handleToggleCheckClick = (shipKey: string) => {
-    // Cari nama kapal dari key
     const parts = shipKey.split("-");
-    // Karena format key Tanggal-NamaKapal, sisa gabungannya adalah nama kapal
     const shipName = parts.slice(1).join("-");
     
     setSelectedShipKey(shipKey);
@@ -138,18 +136,18 @@ export default function ArrivedPage() {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Riwayat Kedatangan Kapal</h2>
-          <p className="text-sm text-zinc-400">Daftar semua kapal yang telah bersandar atau melewati waktu ETA terencana.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Riwayat Kedatangan Kapal</h2>
+          <p className="text-sm text-zinc-500 dark:text-zinc-450">Daftar semua kapal yang telah bersandar atau melewati waktu ETA terencana.</p>
         </div>
         
-        {/* Total Arrived Stats */}
-        <div className="rounded-xl border border-emerald-800/40 bg-emerald-950/20 px-4 py-2 text-emerald-400 font-semibold text-sm">
+        {/* Total Arrived Stats Badge (Menggunakan variabel arrived CSS) */}
+        <div className="rounded-xl border border-emerald-500/20 bg-arrived px-4 py-2 text-arrived-text font-bold text-sm transition-colors duration-300">
           Total Tiba: {arrivedShips.length} Kapal
         </div>
       </div>
 
       {/* Kontrol Pencarian */}
-      <div className="flex flex-col p-6 rounded-2xl border border-zinc-800/80 bg-zinc-900/20 backdrop-blur-md">
+      <div className="flex flex-col p-6 rounded-2xl border border-border bg-card backdrop-blur-md transition-colors duration-300">
         <SearchBar 
           value={searchQuery} 
           onChange={setSearchQuery} 

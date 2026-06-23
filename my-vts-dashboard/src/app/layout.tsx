@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import ThemeToggle from "@/components/theme-toggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +27,30 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100 font-sans">
+      <head>
+        {/* Anti-flicker inline script untuk inisialisasi tema instan */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('vts_theme') || 'dark';
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })()
+            `
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300 font-sans">
         {/* Top Navbar */}
-        <header className="sticky top-0 z-40 w-full border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+        <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
           <div className="flex h-16 items-center justify-between px-6 lg:px-8">
             <div className="flex items-center gap-6">
               {/* Logo VTS */}
@@ -46,22 +66,22 @@ export default function RootLayout({
                   </span>
                 </div>
                 <div>
-                  <h1 className="text-sm font-bold tracking-wider text-white">VTS PANJANG</h1>
-                  <p className="text-[10px] font-medium text-cyan-400 tracking-widest uppercase">Pelaporan Terintegrasi</p>
+                  <h1 className="text-sm font-bold tracking-wider text-foreground">VTS PANJANG</h1>
+                  <p className="text-[10px] font-medium text-cyan-550 tracking-widest uppercase">Pelaporan Terintegrasi</p>
                 </div>
               </Link>
               
               {/* Navigation Menu Tabs */}
-              <nav className="flex items-center gap-4 ml-6 border-l border-zinc-800 pl-6 h-8">
+              <nav className="flex items-center gap-4 ml-6 border-l border-border pl-6 h-8">
                 <Link 
                   href="/" 
-                  className="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors"
+                  className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-foreground transition-colors"
                 >
                   Dashboard
                 </Link>
                 <Link 
                   href="/arrived" 
-                  className="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-colors"
+                  className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-foreground transition-colors"
                 >
                   Kapal Tiba
                 </Link>
@@ -69,7 +89,7 @@ export default function RootLayout({
             </div>
             
             <div className="flex items-center gap-4">
-              <span className="inline-flex items-center rounded-full bg-cyan-950/85 px-3 py-1 text-xs font-semibold text-cyan-400 border border-cyan-800/40">
+              <span className="inline-flex items-center rounded-full bg-cyan-950/80 px-3 py-1 text-xs font-semibold text-cyan-400 border border-cyan-800/40">
                 <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
                 System Live
               </span>
@@ -83,9 +103,12 @@ export default function RootLayout({
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-zinc-900 bg-zinc-950/30 py-6 text-center text-xs text-zinc-600">
+        <footer className="border-t border-border bg-background/30 py-6 text-center text-xs text-zinc-500 transition-colors duration-300">
           <p>© {new Date().getFullYear()} VTS Panjang. All rights reserved.</p>
         </footer>
+
+        {/* Floating Theme Toggle (Bottom Right) */}
+        <ThemeToggle />
       </body>
     </html>
   );

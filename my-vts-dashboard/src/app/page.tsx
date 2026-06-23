@@ -162,8 +162,8 @@ export default function DashboardPage() {
             <div>
               <h4 className="text-sm font-bold text-amber-400">Peringatan Integrasi API (GAS)</h4>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Brek, lo belum ngeset URL Web App Google Apps Script lo di file <code className="text-amber-300">my-vts-dashboard/.env.local</code>. 
-                Ganti nilai <code className="text-amber-300">NEXT_PUBLIC_API_URL</code> dengan URL asli biar data dari Google Sheets ngalir ke sini ya.
+                Anda belum mengonfigurasi URL Web App Google Apps Script pada file <code className="text-amber-300">my-vts-dashboard/.env.local</code>. 
+                Ganti nilai <code className="text-amber-300">NEXT_PUBLIC_API_URL</code> dengan URL yang valid agar data dari Google Sheets terintegrasi ke sistem ini.
               </p>
             </div>
           </div>
@@ -173,8 +173,8 @@ export default function DashboardPage() {
       {/* Header Halaman Utama */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard Monitoring 2DBA</h2>
-          <p className="text-sm text-zinc-400">Pantau pergerakan kapal 2 hari sebelum kedatangan (2 Days Before Arrival).</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Dashboard Monitoring 2DBA</h2>
+          <p className="text-sm text-zinc-500 dark:text-zinc-450">Pantau pergerakan kapal 2 hari sebelum kedatangan (2 Days Before Arrival).</p>
         </div>
         
         {/* Tombol refresh data */}
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             setLoading(false);
           }}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-white font-medium text-sm px-4 py-2.5 transition-all outline-none focus:ring-2 focus:ring-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 rounded-xl bg-zinc-200 dark:bg-zinc-900 border border-border hover:bg-zinc-350 dark:hover:bg-zinc-800 hover:border-border text-foreground font-medium text-sm px-4 py-2.5 transition-all outline-none focus:ring-2 focus:ring-zinc-400/50 dark:focus:ring-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2" />
@@ -199,7 +199,7 @@ export default function DashboardPage() {
       <VtsStats filteredData={filteredData} />
 
       {/* Filter & Kontrol Pencarian */}
-      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-zinc-800/80 bg-zinc-900/20 backdrop-blur-md">
+      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-border bg-card backdrop-blur-md transition-colors duration-300">
         <div className="flex flex-col md:flex-row gap-6">
           <DateFilter 
             dates={availableDates} 
@@ -213,19 +213,19 @@ export default function DashboardPage() {
         </div>
 
         {/* Legenda Warna Baris */}
-        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-400 mt-2 bg-zinc-950/60 p-3 rounded-xl border border-zinc-800/60">
-          <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Legenda Baris Tabel:</span>
+        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-2 bg-background/50 p-3 rounded-xl border border-border transition-colors duration-300">
+          <span className="text-zinc-400 dark:text-zinc-500 uppercase tracking-wider text-[10px]">Legenda Baris Tabel:</span>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-emerald-500/20 border border-emerald-500/40"></span>
+            <span className="h-3 w-3 rounded bg-arrived border border-emerald-500/40"></span>
             <span>Hijau: Kapal Tiba / Selesai (Dicentang / ETA Lewat)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-amber-500/20 border border-amber-500/40"></span>
+            <span className="h-3 w-3 rounded bg-h1 border border-amber-500/40"></span>
             <span>Kuning: Kapal H-1 Kedatangan</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-zinc-900 border border-zinc-850"></span>
-            <span>Abu-abu: Normal (H-2 atau lebih)</span>
+            <span className="h-3 w-3 rounded bg-sticky border border-border"></span>
+            <span>Abu-abu / Terang: Normal (H-2 atau lebih)</span>
           </div>
         </div>
       </div>
