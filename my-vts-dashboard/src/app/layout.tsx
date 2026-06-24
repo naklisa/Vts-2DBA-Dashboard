@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import ThemeToggle from "@/components/theme-toggle";
+import SystemStatus from "@/components/system-status";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VTS Panjang | 2DBA Ship Monitoring Dashboard",
   description: "Sistem Monitoring Kapal 2 Days Before Arrival (2DBA) terintegrasi dengan Google Sheets - VTS Panjang.",
+  icons: {
+    icon: "/Logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -28,6 +32,7 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         {/* Anti-flicker inline script untuk inisialisasi tema instan */}
@@ -43,8 +48,8 @@ export default function RootLayout({
                     document.documentElement.classList.remove('dark');
                   }
                 } catch (e) {}
-              })()
-            `
+              })();
+            `,
           }}
         />
       </head>
@@ -61,15 +66,9 @@ export default function RootLayout({
             <div className="flex items-center gap-6">
               {/* Logo VTS */}
               <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-                {/* Radar Icon */}
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  <span className="absolute top-1 right-1 flex h-1.5 w-1.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
-                  </span>
+                {/* Logo Image */}
+                <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
+                  <img src="/Logo.png" alt="Logo VTS" className="h-8 w-8 object-contain" />
                 </div>
                 <div>
                   <h1 className="text-sm font-bold tracking-wider text-foreground">VTS PANJANG</h1>
@@ -95,10 +94,7 @@ export default function RootLayout({
             </div>
             
             <div className="flex items-center gap-4">
-              <span className="inline-flex items-center rounded-full bg-cyan-950/80 px-3 py-1 text-xs font-semibold text-cyan-400 border border-cyan-800/40">
-                <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-                System Live
-              </span>
+              <SystemStatus />
             </div>
           </div>
         </header>

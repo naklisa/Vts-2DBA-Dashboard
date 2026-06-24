@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { ShipData } from "@/lib/fetcher";
 
 interface DataTableProps {
@@ -142,6 +142,68 @@ const getCountdownText = (etaStr: string): string => {
 };
 
 export default function DataTable({ data, loading, checkedShips, onToggleCheck }: DataTableProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const isHoveredRef = useRef(isHovered);
+
+  // Sinkronisasi ref dengan state hover
+  useEffect(() => {
+    isHoveredRef.current = isHovered;
+  }, [isHovered]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let animationFrameId: number;
+    let lastTime = performance.now();
+    let scrollAccumulator = 0;
+    let pauseTimeout: NodeJS.Timeout;
+    let isPaused = false;
+
+    // Kecepatan auto-scroll (pixel per detik)
+    const scrollSpeed = 15;
+
+    const scroll = (now: number) => {
+      if (isHoveredRef.current || isPaused) {
+        lastTime = now;
+        animationFrameId = requestAnimationFrame(scroll);
+        return;
+      }
+
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      scrollAccumulator += scrollSpeed * delta;
+      if (scrollAccumulator >= 1) {
+        const pixelsToScroll = Math.floor(scrollAccumulator);
+        scrollAccumulator -= pixelsToScroll;
+
+        container.scrollTop += pixelsToScroll;
+
+        const maxScrollTop = container.scrollHeight - container.clientHeight;
+        if (container.scrollTop >= maxScrollTop - 1) {
+          isPaused = true;
+          pauseTimeout = setTimeout(() => {
+            container.scrollTo({ top: 0, behavior: "smooth" });
+            setTimeout(() => {
+              isPaused = false;
+            }, 1500);
+          }, 3000);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    animationFrameId = requestAnimationFrame(scroll);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(pauseTimeout);
+    };
+  }, [data]);
+
   // Helper to render action badges based on keyword
   const getActionBadge = (action: string) => {
     const act = (action || "").trim().toLowerCase();
@@ -214,35 +276,40 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-card backdrop-blur-md shadow-2xl transition-colors duration-300">
-      <div className="overflow-x-auto">
+      <div 
+        ref={containerRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="overflow-auto max-h-[515px] scrollbar-thin"
+      >
         <table className="w-full border-collapse text-left text-xs text-foreground/80">
           <thead>
             {/* Row header menggunakan bg-header yang seragam dan solid */}
             <tr className="border-b border-border bg-header font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 transition-colors duration-300">
-              {/* Checkbox Column Header - Sticky left-0 (Solid bg-header) */}
-              <th className="py-4 text-center w-[50px] min-w-[50px] max-w-[50px] sticky left-0 bg-header z-20 border-r border-border transition-colors duration-300">
+              {/* Checkbox Column Header - Sticky top-0 & left-0 (Solid bg-header) */}
+              <th className="py-4 text-center w-[50px] min-w-[50px] max-w-[50px] sticky top-0 left-0 bg-header z-30 border-r border-border transition-colors duration-300">
                 CHECK
               </th>
-              {/* NO Column Header - Sticky left-50 (Solid bg-header) */}
-              <th className="py-4 text-center w-[60px] min-w-[60px] max-w-[60px] sticky left-[50px] bg-header z-20 border-r border-border transition-colors duration-300">
+              {/* NO Column Header - Sticky top-0 & left-50 (Solid bg-header) */}
+              <th className="py-4 text-center w-[60px] min-w-[60px] max-w-[60px] sticky top-0 left-[50px] bg-header z-30 border-r border-border transition-colors duration-300">
                 NO
               </th>
-              <th className="px-4 py-4 min-w-[80px]">QSO</th>
-              <th className="px-4 py-4 min-w-[120px]">Remark 2DBA</th>
-              {/* NAME Column Header - Sticky left-110 (Solid bg-header) */}
-              <th className="px-5 py-4 w-[240px] min-w-[240px] max-w-[240px] sticky left-[110px] bg-header z-20 border-r border-border font-bold text-foreground transition-colors duration-300">
+              <th className="px-4 py-4 min-w-[80px] sticky top-0 bg-header z-20">QSO</th>
+              <th className="px-4 py-4 min-w-[120px] sticky top-0 bg-header z-20">Remark 2DBA</th>
+              {/* NAME Column Header - Sticky top-0 & left-110 (Solid bg-header) */}
+              <th className="px-5 py-4 w-[240px] min-w-[240px] max-w-[240px] sticky top-0 left-[110px] bg-header z-30 border-r border-border font-bold text-foreground transition-colors duration-300">
                 NAME OF SHIP / CALL SIGN
               </th>
-              <th className="px-4 py-4 min-w-[140px]">Type of Cargo</th>
-              <th className="px-4 py-4 min-w-[120px]">Qty Cargo</th>
-              <th className="px-4 py-4 min-w-[80px]">FLAG</th>
-              <th className="px-4 py-4 min-w-[150px]">Cargo On Board</th>
-              <th className="px-4 py-4 min-w-[130px]">Last Port</th>
-              <th className="px-4 py-4 min-w-[100px]">GT</th>
-              <th className="px-4 py-4 min-w-[145px]">ETA / ETD (LT)</th>
-              <th className="px-4 py-4 min-w-[120px]">General Remark</th>
+              <th className="px-4 py-4 min-w-[140px] sticky top-0 bg-header z-20">Type of Cargo</th>
+              <th className="px-4 py-4 min-w-[120px] sticky top-0 bg-header z-20">Qty Cargo</th>
+              <th className="px-4 py-4 min-w-[80px] sticky top-0 bg-header z-20">FLAG</th>
+              <th className="px-4 py-4 min-w-[150px] sticky top-0 bg-header z-20">Cargo On Board</th>
+              <th className="px-4 py-4 min-w-[130px] sticky top-0 bg-header z-20">Last Port</th>
+              <th className="px-4 py-4 min-w-[100px] sticky top-0 bg-header z-20">GT</th>
+              <th className="px-4 py-4 min-w-[145px] sticky top-0 bg-header z-20">ETA / ETD (LT)</th>
+              <th className="px-4 py-4 min-w-[120px] sticky top-0 bg-header z-20">General Remark</th>
               {/* Action VTS Column Header - Left aligned and tighter min-width */}
-              <th className="px-4 py-4 min-w-[120px] text-left">Action VTS</th>
+              <th className="px-4 py-4 min-w-[120px] text-left sticky top-0 bg-header z-20">Action VTS</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border bg-transparent transition-colors duration-300">

@@ -9,6 +9,7 @@ import ConfirmationModal from "@/components/confirmation-modal";
 export default function ArrivedPage() {
   const [data, setData] = useState<ShipData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [countdown, setCountdown] = useState<number>(10);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [checkedShips, setCheckedShips] = useState<Set<string>>(new Set());
 
@@ -43,21 +44,44 @@ export default function ArrivedPage() {
     loadData();
   }, []);
 
-  // Auto-sync data secara berkala setiap 10 detik tanpa memblokir UI
+  // Auto-sync data secara berkala setiap 10 detik dengan hitung mundur
   useEffect(() => {
     const interval = setInterval(async () => {
-      try {
-        const shipData = await getShipData();
-        if (shipData && shipData.length > 0) {
-          setData(shipData);
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          const syncData = async () => {
+            setLoading(true);
+            try {
+              const shipData = await getShipData();
+              if (shipData && shipData.length > 0) {
+                setData(shipData);
+              }
+            } catch (e) {
+              console.error("Auto-sync error:", e);
+            } finally {
+              setLoading(false);
+            }
+          };
+          syncData();
+          return 10;
         }
-      } catch (e) {
-        console.error("Auto-sync error:", e);
-      }
-    }, 10000);
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
+
+  // Pancarkan event countdown auto-sync ke navbar
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("vts-sync-countdown", {
+          detail: { countdown, loading }
+        })
+      );
+    }
+  }, [countdown, loading]);
 
   // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
   const parseDateString = (dateStr: string) => {
