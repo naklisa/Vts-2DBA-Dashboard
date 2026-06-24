@@ -12,17 +12,17 @@
   --sticky-hover-bg: #f8fafc;
   --header-bg: #e2e8f0; /* slate-200 */
   
-  /* Arrived Status (Forest Green #468432) */
-  --arrived-bg: rgba(70, 132, 50, 0.15);
-  --arrived-text: #2c5a1e;
-  --arrived-sticky-bg: #d1ebc8;
-  --arrived-sticky-hover-bg: #bfe0b4;
+  /* Arrived Status (Soft Sage Green - Light Mode) */
+  --arrived-bg: rgba(240, 253, 244, 0.65);
+  --arrived-text: #166534;
+  --arrived-sticky-bg: #f0fdf4;
+  --arrived-sticky-hover-bg: #dcfce7;
   
-  /* H-1 Status (Golden Yellow #FFC94D) */
-  --h1-bg: rgba(255, 201, 77, 0.22);
-  --h1-text: #8a6200;
-  --h1-sticky-bg: #ffeebb;
-  --h1-sticky-hover-bg: #ffe395;
+  /* H-1 Status (Soft Amber/Yellow - Light Mode) */
+  --h1-bg: rgba(254, 243, 199, 0.5);
+  --h1-text: #92400e;
+  --h1-sticky-bg: #fef3c7;
+  --h1-sticky-hover-bg: #fde68a;
 }
 
 .dark {
@@ -35,17 +35,17 @@
   --sticky-hover-bg: #0f172a;
   --header-bg: #020617; /* slate-950 */
   
-  /* Arrived Status (Forest Green #468432) */
-  --arrived-bg: rgba(70, 132, 50, 0.3);
-  --arrived-text: #b3e5a5;
-  --arrived-sticky-bg: #274e1c;
-  --arrived-sticky-hover-bg: #336324;
+  /* Arrived Status (Obsidian Mint - Dark Mode) */
+  --arrived-bg: rgba(16, 185, 129, 0.08);
+  --arrived-text: #34d399;
+  --arrived-sticky-bg: #061d16;
+  --arrived-sticky-hover-bg: #082f23;
   
-  /* H-1 Status (Golden Yellow #FFC94D) */
-  --h1-bg: rgba(255, 201, 77, 0.15);
-  --h1-text: #ffe094;
-  --h1-sticky-bg: #5c4710;
-  --h1-sticky-hover-bg: #7c611a;
+  /* H-1 Status (Obsidian Amber - Dark Mode) */
+  --h1-bg: rgba(245, 158, 11, 0.08);
+  --h1-text: #fbbf24;
+  --h1-sticky-bg: #1e1402;
+  --h1-sticky-hover-bg: #2c1d03;
 }
 
 @theme inline {
@@ -75,25 +75,31 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Custom Scrollbar Premium untuk Tabel Horizontal */
+/* Custom Scrollbar Premium */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
-  transition: background-color 0.3s ease;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+  background: rgba(148, 163, 184, 0.3); /* Light mode: slate-400 with opacity */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2); /* Dark mode: slate-400 with opacity */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0891b2; /* cyan-600 */
+  background: #06b6d4 !important; /* cyan-500 glow */
+  background-clip: padding-box;
 }
 
 /* Chrome, Edge, Safari autofill background override */

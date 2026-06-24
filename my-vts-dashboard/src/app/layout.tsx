@@ -75,24 +75,24 @@ export default function RootLayout({
                   <p className="text-[10px] font-medium text-cyan-550 tracking-widest uppercase">Pelaporan Terintegrasi</p>
                 </div>
               </Link>
-              
+
               {/* Navigation Menu Tabs */}
               <nav className="flex items-center gap-4 ml-6 border-l border-border pl-6 h-8">
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-foreground transition-colors"
                 >
                   Dashboard
                 </Link>
-                <Link 
-                  href="/arrived" 
+                <Link
+                  href="/arrived"
                   className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-foreground transition-colors"
                 >
                   Kapal Tiba
                 </Link>
               </nav>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <SystemStatus />
             </div>
@@ -105,8 +105,21 @@ export default function RootLayout({
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-border bg-background/30 py-6 text-center text-xs text-zinc-500 transition-colors duration-300">
-          <p>© {new Date().getFullYear()} VTS Panjang. All rights reserved.</p>
+        <footer className="border-t border-border bg-background/30 py-6 transition-colors duration-300">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+              <span>
+                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> X <span className="text-foreground font-bold font-mono">KP IF ITERA 2026</span>
+              </span>
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold font-mono">
+              Vessel Traffic Service Command Center
+            </div>
+          </div>
         </footer>
 
         {/* Floating Theme Toggle (Bottom Right) */}
