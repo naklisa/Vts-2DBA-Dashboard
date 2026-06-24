@@ -43,6 +43,22 @@ export default function ArrivedPage() {
     loadData();
   }, []);
 
+  // Auto-sync data secara berkala setiap 10 detik tanpa memblokir UI
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const shipData = await getShipData();
+        if (shipData && shipData.length > 0) {
+          setData(shipData);
+        }
+      } catch (e) {
+        console.error("Auto-sync error:", e);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
   const parseDateString = (dateStr: string) => {
     if (!dateStr) return new Date(0);
@@ -71,20 +87,23 @@ export default function ArrivedPage() {
     return new Date(year, month, day);
   };
 
-  // Helper untuk cek apakah ETA sudah lewat dari Tanggal_Log
+  // Helper untuk cek apakah ETA sudah lewat dari hari ini (realtime)
   const isETAPassed = (logDateStr: string, etaStr: string) => {
-    if (!logDateStr || !etaStr) return false;
-    const logDate = parseDateString(logDateStr);
+    if (!etaStr) return false;
 
     const etaDatePart = etaStr.split(" ")[0]; // "06/06/2026"
     const etaParts = etaDatePart.split("/");
-    if (etaParts.length !== 3) return false;
+    if (etaParts.length < 3) return false;
     const etaDay = parseInt(etaParts[0], 10);
     const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
     const etaYear = parseInt(etaParts[2], 10);
 
     const etaDate = new Date(etaYear, etaMonth, etaDay);
-    return etaDate.getTime() <= logDate.getTime();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return etaDate.getTime() <= today.getTime();
   };
 
   // Saring kapal yang sudah tiba (diceklis ATAU ETA-nya sudah terlampaui)

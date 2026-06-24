@@ -3,47 +3,49 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f4f4f5; /* zinc-100 */
-  --foreground: #09090b; /* zinc-950 */
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --border-color: #e4e4e7; /* zinc-200 */
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #0f172a; /* slate-900 */
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border-color: #e2e8f0; /* slate-200 */
   --sticky-bg: #ffffff;
-  --sticky-hover-bg: #f4f4f5;
-  --header-bg: #e4e4e7; /* zinc-200 */
+  --sticky-hover-bg: #f8fafc;
+  --header-bg: #e2e8f0; /* slate-200 */
   
-  /* Arrived Status (Emerald) - Lebih kontras di mode terang */
-  --arrived-bg: rgba(16, 185, 129, 0.25);
-  --arrived-text: #065f46;
-  --arrived-sticky-bg: #a7f3d0;
-  --arrived-sticky-hover-bg: #6ee7b7;
+  /* Arrived Status (Forest Green #468432) */
+  --arrived-bg: rgba(70, 132, 50, 0.15);
+  --arrived-text: #2c5a1e;
+  --arrived-sticky-bg: #d1ebc8;
+  --arrived-sticky-hover-bg: #bfe0b4;
   
-  /* H-1 Status (Amber) */
-  --h1-bg: rgba(254, 243, 199, 0.55);
-  --h1-text: #92400e;
-  --h1-sticky-bg: #fef3c7;
-  --h1-sticky-hover-bg: #fde68a;
+  /* H-1 Status (Golden Yellow #FFC94D) */
+  --h1-bg: rgba(255, 201, 77, 0.22);
+  --h1-text: #8a6200;
+  --h1-sticky-bg: #ffeebb;
+  --h1-sticky-hover-bg: #ffe395;
 }
 
 .dark {
-  --background: #09090b; /* zinc-950 */
-  --foreground: #f4f4f5; /* zinc-100 */
-  --card-bg: rgba(24, 24, 27, 0.6); /* zinc-900/60 */
-  --border-color: #27272a; /* zinc-800 */
-  --sticky-bg: #09090b;
-  --sticky-hover-bg: #18181b;
-  --header-bg: #09090b; /* zinc-950 */
+  --background: #020617; /* slate-950 */
+  --foreground: #f1f5f9; /* slate-100 */
+  --bg-gradient: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
+  --card-bg: rgba(15, 23, 42, 0.65); /* slate-900/65 */
+  --border-color: #1e293b; /* slate-800 */
+  --sticky-bg: #020617;
+  --sticky-hover-bg: #0f172a;
+  --header-bg: #020617; /* slate-950 */
   
-  /* Arrived Status (Emerald) - Lebih kontras & hijau tua pekat di mode gelap */
-  --arrived-bg: rgba(6, 78, 59, 0.45);
-  --arrived-text: #34d399; /* emerald-300 (hijau terang menyala) */
-  --arrived-sticky-bg: #064e3b; /* emerald-900 (solid hijau tua) */
-  --arrived-sticky-hover-bg: #047857; /* emerald-700 (solid) */
+  /* Arrived Status (Forest Green #468432) */
+  --arrived-bg: rgba(70, 132, 50, 0.3);
+  --arrived-text: #b3e5a5;
+  --arrived-sticky-bg: #274e1c;
+  --arrived-sticky-hover-bg: #336324;
   
-  /* H-1 Status (Amber) */
-  --h1-bg: rgba(69, 26, 3, 0.35);
-  --h1-text: #fde68a;
-  --h1-sticky-bg: #451a03;
-  --h1-sticky-hover-bg: #78350f;
+  /* H-1 Status (Golden Yellow #FFC94D) */
+  --h1-bg: rgba(255, 201, 77, 0.15);
+  --h1-text: #ffe094;
+  --h1-sticky-bg: #5c4710;
+  --h1-sticky-hover-bg: #7c611a;
 }
 
 @theme inline {
@@ -67,7 +69,8 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--foreground);
   transition: background-color 0.3s ease, color 0.3s ease;
 }

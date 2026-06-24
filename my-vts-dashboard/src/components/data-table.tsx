@@ -36,42 +36,109 @@ const parseDateString = (dateStr: string) => {
   return new Date(year, month, day);
 };
 
-// Deteksi apakah ETA berselisih persis H-1 dari Tanggal_Log
+// Deteksi apakah ETA berselisih persis H-1 dari hari ini (realtime)
 const isETA_H1 = (logDateStr: string, etaStr: string) => {
-  if (!logDateStr || !etaStr) return false;
+  if (!etaStr) return false;
   
-  const logDate = parseDateString(logDateStr);
-
   const etaDatePart = etaStr.split(" ")[0]; // "07/06/2026"
   const etaParts = etaDatePart.split("/");
-  if (etaParts.length !== 3) return false;
+  if (etaParts.length < 3) return false;
   const etaDay = parseInt(etaParts[0], 10);
   const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
   const etaYear = parseInt(etaParts[2], 10);
 
   const etaDate = new Date(etaYear, etaMonth, etaDay);
 
-  const diffTime = etaDate.getTime() - logDate.getTime();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffTime = etaDate.getTime() - today.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
   return diffDays === 1;
 };
 
-// Deteksi apakah ETA sudah lewat dari Tanggal_Log
+// Deteksi apakah ETA sudah lewat dari hari ini (realtime)
 const isETAPassed = (logDateStr: string, etaStr: string) => {
-  if (!logDateStr || !etaStr) return false;
-  
-  const logDate = parseDateString(logDateStr);
+  if (!etaStr) return false;
 
   const etaDatePart = etaStr.split(" ")[0]; // "06/06/2026"
   const etaParts = etaDatePart.split("/");
-  if (etaParts.length !== 3) return false;
+  if (etaParts.length < 3) return false;
   const etaDay = parseInt(etaParts[0], 10);
   const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
   const etaYear = parseInt(etaParts[2], 10);
 
   const etaDate = new Date(etaYear, etaMonth, etaDay);
 
-  return etaDate.getTime() <= logDate.getTime();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return etaDate.getTime() <= today.getTime();
+};
+
+// Mengonversi string format ETA (seperti "25/06/2026/07.00LT" atau ISO) ke objek Date
+const parseETA = (etaStr: string): Date | null => {
+  if (!etaStr) return null;
+  if (etaStr.includes("T") && etaStr.includes("Z")) {
+    const d = new Date(etaStr);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  const cleanStr = etaStr.replace(/(LT|\(LT\))/gi, "").trim();
+  const parts = cleanStr.split(/[\s/]/);
+  if (parts.length < 3) return null;
+  
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // 0-indexed
+  const year = parseInt(parts[2], 10);
+  
+  let hours = 0;
+  let minutes = 0;
+  if (parts.length >= 4) {
+    const timePart = parts[3];
+    const timeSubparts = timePart.split(/[.:]/);
+    if (timeSubparts.length >= 1) hours = parseInt(timeSubparts[0], 10) || 0;
+    if (timeSubparts.length >= 2) minutes = parseInt(timeSubparts[1], 10) || 0;
+  }
+  
+  const d = new Date(year, month, day, hours, minutes);
+  return isNaN(d.getTime()) ? null : d;
+};
+
+// Menghasilkan teks hitung mundur relatif ETA dari waktu sekarang
+const getCountdownText = (etaStr: string): string => {
+  const etaDate = parseETA(etaStr);
+  if (!etaDate) return "";
+  
+  const now = new Date();
+  const diffMs = etaDate.getTime() - now.getTime();
+  const diffMins = Math.round(diffMs / (1000 * 60));
+  
+  if (Math.abs(diffMins) < 60) {
+    if (diffMins > 0) {
+      return `Tiba dlm ${diffMins} mnt`;
+    } else if (diffMins < 0) {
+      return `Tiba ${Math.abs(diffMins)} mnt lalu`;
+    } else {
+      return "Tiba sekarang";
+    }
+  }
+  
+  const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+  if (Math.abs(diffHours) < 24) {
+    if (diffHours > 0) {
+      return `Tiba dlm ${diffHours} jam`;
+    } else {
+      return `Tiba ${Math.abs(diffHours)} jam lalu`;
+    }
+  }
+  
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) {
+    return `Tiba dlm ${diffDays} hari`;
+  } else {
+    return `Tiba ${Math.abs(diffDays)} hari lalu`;
+  }
 };
 
 export default function DataTable({ data, loading, checkedShips, onToggleCheck }: DataTableProps) {
@@ -255,7 +322,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
 
                     {/* NO - Sticky left-50 (Solid background) */}
                     <td className={`w-[60px] min-w-[60px] max-w-[60px] py-3.5 text-center font-bold text-zinc-400 dark:text-zinc-550 sticky left-[50px] z-10 border-r border-border transition-colors duration-300 ${stickyBgClass}`}>
-                      {ship.NO}
+                      {index + 1}
                     </td>
                     
                     {/* QSO */}
@@ -269,7 +336,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
                     </td>
                     
                     {/* NAME OF SHIP / CALL SIGN - Sticky left-110 (Solid background) */}
-                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3.5 font-bold sticky left-[110px] z-10 border-r border-border tracking-wide transition-colors duration-300 truncate ${stickyBgClass} ${isChecked || isPassed ? 'text-arrived-text font-extrabold' : isH1 ? 'text-h1-text font-extrabold' : 'text-foreground'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
+                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3.5 font-bold sticky left-[110px] z-10 border-r border-border tracking-wide transition-colors duration-300 whitespace-normal break-words leading-relaxed ${stickyBgClass} ${isChecked || isPassed ? 'text-arrived-text font-extrabold' : isH1 ? 'text-h1-text font-extrabold' : 'text-foreground'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
                       {ship["NAME_OF_SHIP/_CALL_SIGN"] || "-"}
                     </td>
                     
@@ -305,7 +372,12 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
                     
                     {/* ETA / ETD (LT) */}
                     <td className="px-4 py-3.5 text-cyan-600 dark:text-cyan-400 font-semibold">
-                      {ship["ETA_/_ETD_(LT)"] || "-"}
+                      <div>{ship["ETA_/_ETD_(LT)"] || "-"}</div>
+                      {ship["ETA_/_ETD_(LT)"] && getCountdownText(ship["ETA_/_ETD_(LT)"]) && (
+                        <div className="text-[10px] text-zinc-500 dark:text-zinc-450 font-normal mt-0.5 animate-pulse">
+                          {getCountdownText(ship["ETA_/_ETD_(LT)"])}
+                        </div>
+                      )}
                     </td>
                     
                     {/* General Remark */}

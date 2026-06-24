@@ -24,11 +24,16 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
               Belum ada data tanggal
             </option>
           ) : (
-            dates.map((date) => (
-              <option key={date} value={date} className="bg-background text-foreground">
-                {date}
+            <>
+              <option value="Semua" className="bg-background text-foreground">
+                Semua Tanggal
               </option>
-            ))
+              {dates.map((date) => (
+                <option key={date} value={date} className="bg-background text-foreground">
+                  {date}
+                </option>
+              ))}
+            </>
           )}
         </select>
         
