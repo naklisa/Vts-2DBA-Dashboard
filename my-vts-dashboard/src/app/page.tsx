@@ -8,6 +8,7 @@ import SearchBar from "@/components/search-bar";
 import DataTable from "@/components/data-table";
 import ConfirmationModal from "@/components/confirmation-modal";
 import SettingsPanel from "@/components/settings-panel";
+import { isETAPassed, parseDateString } from "@/lib/date-utils";
 
 export default function DashboardPage() {
   const [data, setData] = useState<ShipData[]>([]);
@@ -212,33 +213,7 @@ export default function DashboardPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showAnalytics]);
 
-  // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
-  const parseDateString = (dateStr: string) => {
-    if (!dateStr) return new Date(0);
-    const parts = dateStr.split("/");
-    if (parts.length !== 3) return new Date(0);
-    const day = parseInt(parts[0], 10);
-    const monthName = parts[1].toUpperCase();
-    const year = parseInt(parts[2], 10);
 
-    const monthMap: Record<string, number> = {
-      JANUARI: 0, JAN: 0,
-      FEBRUARI: 1, PEBRUARI: 1, FEB: 1,
-      MARET: 2, MAR: 2,
-      APRIL: 3, APR: 3,
-      MEI: 4,
-      JUNI: 5, JUN: 5,
-      JULI: 6, JUL: 6,
-      AGUSTUS: 7, AGS: 7, AGU: 7,
-      SEPTEMBER: 8, SEP: 8,
-      OKTOBER: 9, OKT: 9,
-      NOVEMBER: 10, NOPEMBER: 10, NOV: 10,
-      DESEMBER: 11, DES: 11
-    };
-
-    const month = monthMap[monthName] !== undefined ? monthMap[monthName] : 0;
-    return new Date(year, month, day);
-  };
 
   // Fungsi pengurutan tanggal
   const sortDates = (dateList: string[]) => {
@@ -256,23 +231,7 @@ export default function DashboardPage() {
   // Helper untuk mendeteksi apakah kapal telah melewati ETA
   const isShipETAPassed = (shipKey: string) => {
     const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === shipKey);
-    if (!ship) return false;
-    
-    const etaStr = ship["ETA_/_ETD_(LT)"];
-    if (!etaStr) return false;
-
-    const etaDatePart = etaStr.split(" ")[0];
-    const etaParts = etaDatePart.split("/");
-    if (etaParts.length < 3) return false;
-    const etaDay = parseInt(etaParts[0], 10);
-    const etaMonth = parseInt(etaParts[1], 10) - 1;
-    const etaYear = parseInt(etaParts[2], 10);
-
-    const etaDate = new Date(etaYear, etaMonth, etaDay);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return etaDate.getTime() <= today.getTime();
+    return ship ? isETAPassed(ship["ETA_/_ETD_(LT)"]) : false;
   };
 
   // Fungsi pemicu klik checkbox (tentukan aksi, lalu buka modal konfirmasi)

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { ShipData } from "@/lib/fetcher";
+import { parseETA, isETAPassed, isETA_H1 } from "@/lib/date-utils";
 
 interface DataTableProps {
   data: ShipData[];
@@ -10,102 +11,7 @@ interface DataTableProps {
   scrollSpeed?: string;
 }
 
-// Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
-const parseDateString = (dateStr: string) => {
-  if (!dateStr) return new Date(0);
-  const parts = dateStr.split("/");
-  if (parts.length !== 3) return new Date(0);
-  const day = parseInt(parts[0], 10);
-  const monthName = parts[1].toUpperCase();
-  const year = parseInt(parts[2], 10);
 
-  const monthMap: Record<string, number> = {
-    JANUARI: 0, JAN: 0,
-    FEBRUARI: 1, PEBRUARI: 1, FEB: 1,
-    MARET: 2, MAR: 2,
-    APRIL: 3, APR: 3,
-    MEI: 4,
-    JUNI: 5, JUN: 5,
-    JULI: 6, JUL: 6,
-    AGUSTUS: 7, AGS: 7, AGU: 7,
-    SEPTEMBER: 8, SEP: 8,
-    OKTOBER: 9, OKT: 9,
-    NOVEMBER: 10, NOPEMBER: 10, NOV: 10,
-    DESEMBER: 11, DES: 11
-  };
-
-  const month = monthMap[monthName] !== undefined ? monthMap[monthName] : 0;
-  return new Date(year, month, day);
-};
-
-// Deteksi apakah ETA berselisih persis H-1 dari hari ini (realtime)
-const isETA_H1 = (logDateStr: string, etaStr: string) => {
-  if (!etaStr) return false;
-  
-  const etaDatePart = etaStr.split(" ")[0]; // "07/06/2026"
-  const etaParts = etaDatePart.split("/");
-  if (etaParts.length < 3) return false;
-  const etaDay = parseInt(etaParts[0], 10);
-  const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
-  const etaYear = parseInt(etaParts[2], 10);
-
-  const etaDate = new Date(etaYear, etaMonth, etaDay);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const diffTime = etaDate.getTime() - today.getTime();
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays === 1;
-};
-
-// Deteksi apakah ETA sudah lewat dari hari ini (realtime)
-const isETAPassed = (logDateStr: string, etaStr: string) => {
-  if (!etaStr) return false;
-
-  const etaDatePart = etaStr.split(" ")[0]; // "06/06/2026"
-  const etaParts = etaDatePart.split("/");
-  if (etaParts.length < 3) return false;
-  const etaDay = parseInt(etaParts[0], 10);
-  const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
-  const etaYear = parseInt(etaParts[2], 10);
-
-  const etaDate = new Date(etaYear, etaMonth, etaDay);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return etaDate.getTime() <= today.getTime();
-};
-
-// Mengonversi string format ETA (seperti "25/06/2026/07.00LT" atau ISO) ke objek Date
-const parseETA = (etaStr: string): Date | null => {
-  if (!etaStr) return null;
-  if (etaStr.includes("T") && etaStr.includes("Z")) {
-    const d = new Date(etaStr);
-    return isNaN(d.getTime()) ? null : d;
-  }
-
-  const cleanStr = etaStr.replace(/(LT|\(LT\))/gi, "").trim();
-  const parts = cleanStr.split(/[\s/]/);
-  if (parts.length < 3) return null;
-  
-  const day = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1; // 0-indexed
-  const year = parseInt(parts[2], 10);
-  
-  let hours = 0;
-  let minutes = 0;
-  if (parts.length >= 4) {
-    const timePart = parts[3];
-    const timeSubparts = timePart.split(/[.:]/);
-    if (timeSubparts.length >= 1) hours = parseInt(timeSubparts[0], 10) || 0;
-    if (timeSubparts.length >= 2) minutes = parseInt(timeSubparts[1], 10) || 0;
-  }
-  
-  const d = new Date(year, month, day, hours, minutes);
-  return isNaN(d.getTime()) ? null : d;
-};
 
 // Menghasilkan teks hitung mundur relatif ETA dari waktu sekarang
 const getCountdownText = (etaStr: string): string => {
@@ -370,8 +276,8 @@ export default function DataTable({
               // Actual Data Rows
               data.map((ship, index) => {
                 const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
-                const isPassed = isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
-                const isH1 = isETA_H1(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
+                const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
+                const isH1 = isETA_H1(ship["ETA_/_ETD_(LT)"]);
                 
                 const isCheckedInDb = checkedShips.has(shipKey);
                 const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);

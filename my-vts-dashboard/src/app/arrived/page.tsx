@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { getShipData, ShipData } from "@/lib/fetcher";
+import { isETAPassed } from "@/lib/date-utils";
 import SearchBar from "@/components/search-bar";
 import DataTable from "@/components/data-table";
 import ConfirmationModal from "@/components/confirmation-modal";
@@ -104,59 +105,13 @@ export default function ArrivedPage() {
     }
   }, [countdown, loading, syncInterval]);
 
-  // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
-  const parseDateString = (dateStr: string) => {
-    if (!dateStr) return new Date(0);
-    const parts = dateStr.split("/");
-    if (parts.length !== 3) return new Date(0);
-    const day = parseInt(parts[0], 10);
-    const monthName = parts[1].toUpperCase();
-    const year = parseInt(parts[2], 10);
 
-    const monthMap: Record<string, number> = {
-      JANUARI: 0, JAN: 0,
-      FEBRUARI: 1, PEBRUARI: 1, FEB: 1,
-      MARET: 2, MAR: 2,
-      APRIL: 3, APR: 3,
-      MEI: 4,
-      JUNI: 5, JUN: 5,
-      JULI: 6, JUL: 6,
-      AGUSTUS: 7, AGS: 7, AGU: 7,
-      SEPTEMBER: 8, SEP: 8,
-      OKTOBER: 9, OKT: 9,
-      NOVEMBER: 10, NOPEMBER: 10, NOV: 10,
-      DESEMBER: 11, DES: 11
-    };
 
-    const month = monthMap[monthName] !== undefined ? monthMap[monthName] : 0;
-    return new Date(year, month, day);
-  };
-
-  // Helper untuk cek apakah ETA sudah lewat dari hari ini (realtime)
-  const isETAPassed = (logDateStr: string, etaStr: string) => {
-    if (!etaStr) return false;
-
-    const etaDatePart = etaStr.split(" ")[0]; // "06/06/2026"
-    const etaParts = etaDatePart.split("/");
-    if (etaParts.length < 3) return false;
-    const etaDay = parseInt(etaParts[0], 10);
-    const etaMonth = parseInt(etaParts[1], 10) - 1; // 0-indexed
-    const etaYear = parseInt(etaParts[2], 10);
-
-    const etaDate = new Date(etaYear, etaMonth, etaDay);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return etaDate.getTime() <= today.getTime();
-  };
-
-  // Saring kapal yang sudah tiba (diceklis ATAU ETA-nya sudah terlampaui dan tidak di-override uncheck)
   const arrivedShips = useMemo(() => {
     return data.filter(ship => {
       const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
       const isChecked = checkedShips.has(shipKey);
-      const isPassed = isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
+      const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
       const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
       return isChecked || (isPassed && !isOverriddenUnchecked);
     });
@@ -177,7 +132,7 @@ export default function ArrivedPage() {
     
     // Cari status kapal
     const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === shipKey);
-    const isPassed = ship ? isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]) : false;
+    const isPassed = ship ? isETAPassed(ship["ETA_/_ETD_(LT)"]) : false;
     const isCheckedInDb = checkedShips.has(shipKey);
     const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
     const currentlyArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
