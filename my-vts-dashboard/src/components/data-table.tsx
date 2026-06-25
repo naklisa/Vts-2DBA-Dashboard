@@ -5,7 +5,9 @@ interface DataTableProps {
   data: ShipData[];
   loading: boolean;
   checkedShips: Set<string>;
+  uncheckedOverrides: Set<string>;
   onToggleCheck: (key: string) => void;
+  scrollSpeed?: string;
 }
 
 // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
@@ -141,7 +143,14 @@ const getCountdownText = (etaStr: string): string => {
   }
 };
 
-export default function DataTable({ data, loading, checkedShips, onToggleCheck }: DataTableProps) {
+export default function DataTable({ 
+  data, 
+  loading, 
+  checkedShips, 
+  uncheckedOverrides, 
+  onToggleCheck, 
+  scrollSpeed = "normal" 
+}: DataTableProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const isHoveredRef = useRef(isHovered);
@@ -161,11 +170,22 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
     let pauseTimeout: NodeJS.Timeout;
     let isPaused = false;
 
-    // Kecepatan auto-scroll (pixel per detik)
-    const scrollSpeed = 15;
+    // Nilai kecepatan gulir dinamis
+    const getScrollSpeedVal = (speed: string) => {
+      switch (speed) {
+        case "slow": return 8;
+        case "fast": return 36;
+        case "off": return 0;
+        case "normal":
+        default:
+          return 18;
+      }
+    };
+
+    const speedVal = getScrollSpeedVal(scrollSpeed);
 
     const scroll = (now: number) => {
-      if (isHoveredRef.current || isPaused) {
+      if (isHoveredRef.current || isPaused || speedVal === 0) {
         lastTime = now;
         animationFrameId = requestAnimationFrame(scroll);
         return;
@@ -174,7 +194,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      scrollAccumulator += scrollSpeed * delta;
+      scrollAccumulator += speedVal * delta;
       if (scrollAccumulator >= 1) {
         const pixelsToScroll = Math.floor(scrollAccumulator);
         scrollAccumulator -= pixelsToScroll;
@@ -202,7 +222,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
       cancelAnimationFrame(animationFrameId);
       clearTimeout(pauseTimeout);
     };
-  }, [data]);
+  }, [data, scrollSpeed]);
 
   // Helper to render action badges based on keyword
   const getActionBadge = (action: string) => {
@@ -280,7 +300,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
         ref={containerRef}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="overflow-auto max-h-[515px] scrollbar-thin"
+        className="overflow-auto max-h-[515px]"
       >
         <table className="w-full border-collapse text-left text-xs text-foreground/80">
           <thead>
@@ -350,16 +370,21 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
               // Actual Data Rows
               data.map((ship, index) => {
                 const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
-                const isChecked = checkedShips.has(shipKey);
                 const isPassed = isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
                 const isH1 = isETA_H1(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
                 
+                const isCheckedInDb = checkedShips.has(shipKey);
+                const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+                
+                // Kapal dianggap Tiba jika diceklis di DB ATAU (ETA sudah terlewat DAN tidak di-override uncheck)
+                const isArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
+
                 // Penentuan styling baris berdasarkan status kapal (Opaque CSS Variables)
                 let rowBgClass = "hover:bg-zinc-200/40 dark:hover:bg-zinc-800/30 text-foreground/80";
                 let stickyBgClass = "bg-sticky group-hover:bg-sticky-hover";
                 let highlightBorderClass = "";
-
-                if (isChecked || isPassed) {
+ 
+                if (isArrived) {
                   // Hijau untuk Kapal Tiba/Selesai
                   rowBgClass = "bg-arrived hover:opacity-90";
                   stickyBgClass = "bg-arrived-sticky group-hover:bg-arrived-sticky-hover text-arrived-text";
@@ -370,7 +395,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
                   stickyBgClass = "bg-h1-sticky group-hover:bg-h1-sticky-hover text-h1-text";
                   highlightBorderClass = "border-l-4 border-l-amber-500/80";
                 }
-
+ 
                 return (
                   <tr 
                     key={`${ship.NO}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}-${index}`}
@@ -380,13 +405,13 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
                     <td className={`w-[50px] min-w-[50px] max-w-[50px] py-3.5 text-center sticky left-0 z-10 border-r border-border transition-colors duration-300 ${stickyBgClass}`}>
                       <input
                         type="checkbox"
-                        checked={isChecked}
+                        checked={isArrived}
                         onChange={() => onToggleCheck(shipKey)}
                         className="h-4.5 w-4.5 rounded border-zinc-300 dark:border-zinc-700 bg-background text-cyan-600 focus:ring-cyan-500 focus:ring-offset-background cursor-pointer"
                         title="Tandai kapal sudah tiba/selesai"
                       />
                     </td>
-
+ 
                     {/* NO - Sticky left-50 (Solid background) */}
                     <td className={`w-[60px] min-w-[60px] max-w-[60px] py-3.5 text-center font-bold text-zinc-400 dark:text-zinc-550 sticky left-[50px] z-10 border-r border-border transition-colors duration-300 ${stickyBgClass}`}>
                       {index + 1}
@@ -403,7 +428,7 @@ export default function DataTable({ data, loading, checkedShips, onToggleCheck }
                     </td>
                     
                     {/* NAME OF SHIP / CALL SIGN - Sticky left-110 (Solid background) */}
-                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3.5 font-bold sticky left-[110px] z-10 border-r border-border tracking-wide transition-colors duration-300 whitespace-normal break-words leading-relaxed ${stickyBgClass} ${isChecked || isPassed ? 'text-arrived-text font-extrabold' : isH1 ? 'text-h1-text font-extrabold' : 'text-foreground'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
+                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3.5 font-bold sticky left-[110px] z-10 border-r border-border tracking-wide transition-colors duration-300 whitespace-normal break-words leading-relaxed ${stickyBgClass} ${isArrived ? 'text-arrived-text font-extrabold' : isH1 ? 'text-h1-text font-extrabold' : 'text-foreground'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
                       {ship["NAME_OF_SHIP/_CALL_SIGN"] || "-"}
                     </td>
                     

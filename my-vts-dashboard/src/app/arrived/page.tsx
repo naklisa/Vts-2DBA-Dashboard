@@ -12,25 +12,38 @@ export default function ArrivedPage() {
   const [countdown, setCountdown] = useState<number>(10);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [checkedShips, setCheckedShips] = useState<Set<string>>(new Set());
+  const [uncheckedOverrides, setUncheckedOverrides] = useState<Set<string>>(new Set());
 
   // State untuk modal konfirmasi
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedShipKey, setSelectedShipKey] = useState<string>("");
   const [selectedShipName, setSelectedShipName] = useState<string>("");
+  const [selectedShipAction, setSelectedShipAction] = useState<string>("");
+  const [syncInterval, setSyncInterval] = useState<number>(10);
 
-  // Load status ceklis kapal dari localStorage saat pertama kali masuk (Client-side)
-  useEffect(() => {
-    const stored = localStorage.getItem("vts_checked_ships");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setCheckedShips(new Set(parsed));
-        }
-      } catch (e) {
-        console.error("Failed to parse checked ships:", e);
+  // Fetch status arrived & override dari database internal
+  const fetchArrivedStatus = async () => {
+    try {
+      const response = await fetch("/api/arrived");
+      if (response.ok) {
+        const result = await response.json();
+        setCheckedShips(new Set(result.arrivedKeys || []));
+        setUncheckedOverrides(new Set(result.undockedKeys || []));
       }
+    } catch (e) {
+      console.error("Failed to fetch arrived status:", e);
     }
+  };
+
+  // Load preferensi sync & initial fetches
+  useEffect(() => {
+    const storedSync = localStorage.getItem("vts_sync_interval");
+    if (storedSync) {
+      const parsedInterval = parseInt(storedSync, 10);
+      setSyncInterval(parsedInterval);
+      setCountdown(parsedInterval);
+    }
+    fetchArrivedStatus();
   }, []);
 
   // Fetch data kapal dari GAS
@@ -44,8 +57,15 @@ export default function ArrivedPage() {
     loadData();
   }, []);
 
-  // Auto-sync data secara berkala setiap 10 detik dengan hitung mundur
+  // Auto-sync data secara berkala setiap N detik dengan hitung mundur
   useEffect(() => {
+    if (syncInterval === 0) {
+      // Manual sync mode: countdown dihentikan
+      return;
+    }
+
+    setCountdown(syncInterval);
+
     const interval = setInterval(async () => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -56,6 +76,7 @@ export default function ArrivedPage() {
               if (shipData && shipData.length > 0) {
                 setData(shipData);
               }
+              await fetchArrivedStatus();
             } catch (e) {
               console.error("Auto-sync error:", e);
             } finally {
@@ -63,25 +84,25 @@ export default function ArrivedPage() {
             }
           };
           syncData();
-          return 10;
+          return syncInterval;
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [syncInterval]);
 
   // Pancarkan event countdown auto-sync ke navbar
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("vts-sync-countdown", {
-          detail: { countdown, loading }
+          detail: { countdown: syncInterval === 0 ? null : countdown, loading }
         })
       );
     }
-  }, [countdown, loading]);
+  }, [countdown, loading, syncInterval]);
 
   // Fungsi utilitas untuk parsing string tanggal "DD/BULAN/YYYY" menjadi objek Date
   const parseDateString = (dateStr: string) => {
@@ -130,15 +151,16 @@ export default function ArrivedPage() {
     return etaDate.getTime() <= today.getTime();
   };
 
-  // Saring kapal yang sudah tiba (diceklis ATAU ETA-nya sudah terlampaui)
+  // Saring kapal yang sudah tiba (diceklis ATAU ETA-nya sudah terlampaui dan tidak di-override uncheck)
   const arrivedShips = useMemo(() => {
     return data.filter(ship => {
       const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
       const isChecked = checkedShips.has(shipKey);
       const isPassed = isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]);
-      return isChecked || isPassed;
+      const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+      return isChecked || (isPassed && !isOverriddenUnchecked);
     });
-  }, [data, checkedShips]);
+  }, [data, checkedShips, uncheckedOverrides]);
 
   // Saring berdasarkan input pencarian
   const filteredArrivedShips = useMemo(() => {
@@ -148,28 +170,55 @@ export default function ArrivedPage() {
     });
   }, [arrivedShips, searchQuery]);
 
-  // Panggil modal konfirmasi pas diklik checkbox
+  // Panggil modal konfirmasi pas diklik checkbox (tentukan target action)
   const handleToggleCheckClick = (shipKey: string) => {
     const parts = shipKey.split("-");
     const shipName = parts.slice(1).join("-");
     
+    // Cari status kapal
+    const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === shipKey);
+    const isPassed = ship ? isETAPassed(ship.Tanggal_Log, ship["ETA_/_ETD_(LT)"]) : false;
+    const isCheckedInDb = checkedShips.has(shipKey);
+    const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+    const currentlyArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
+
+    let action = "";
+    if (currentlyArrived) {
+      if (isPassed) {
+        action = "uncheck_override";
+      } else {
+        action = "uncheck_manual";
+      }
+    } else {
+      if (isPassed) {
+        action = "reset_override";
+      } else {
+        action = "check";
+      }
+    }
+
     setSelectedShipKey(shipKey);
     setSelectedShipName(shipName);
+    setSelectedShipAction(action);
     setModalOpen(true);
   };
 
-  // Konfirmasi perubahan ceklis
-  const handleConfirmToggle = () => {
-    setCheckedShips(prev => {
-      const next = new Set(prev);
-      if (next.has(selectedShipKey)) {
-        next.delete(selectedShipKey);
-      } else {
-        next.add(selectedShipKey);
+  // Konfirmasi perubahan ceklis dengan memanggil API server
+  const handleConfirmToggle = async () => {
+    try {
+      const response = await fetch("/api/arrived", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shipKey: selectedShipKey, action: selectedShipAction }),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setCheckedShips(new Set(result.arrivedKeys || []));
+        setUncheckedOverrides(new Set(result.undockedKeys || []));
       }
-      localStorage.setItem("vts_checked_ships", JSON.stringify(Array.from(next)));
-      return next;
-    });
+    } catch (e) {
+      console.error("Failed to update status on server:", e);
+    }
     setModalOpen(false);
   };
 
@@ -202,14 +251,16 @@ export default function ArrivedPage() {
         data={filteredArrivedShips} 
         loading={loading} 
         checkedShips={checkedShips}
+        uncheckedOverrides={uncheckedOverrides}
         onToggleCheck={handleToggleCheckClick}
+        scrollSpeed="off"
       />
 
       {/* Modal Konfirmasi */}
       <ConfirmationModal
         isOpen={modalOpen}
         shipName={selectedShipName}
-        isChecking={!checkedShips.has(selectedShipKey)}
+        isChecking={selectedShipAction === "check" || selectedShipAction === "reset_override"}
         onConfirm={handleConfirmToggle}
         onCancel={() => setModalOpen(false)}
       />

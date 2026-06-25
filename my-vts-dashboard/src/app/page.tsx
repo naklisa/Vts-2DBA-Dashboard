@@ -7,6 +7,7 @@ import DateFilter from "@/components/date-filter";
 import SearchBar from "@/components/search-bar";
 import DataTable from "@/components/data-table";
 import ConfirmationModal from "@/components/confirmation-modal";
+import SettingsPanel from "@/components/settings-panel";
 
 export default function DashboardPage() {
   const [data, setData] = useState<ShipData[]>([]);
@@ -17,7 +18,9 @@ export default function DashboardPage() {
   
   // State untuk auto-sync countdown & suara sonar
   const [countdown, setCountdown] = useState<number>(10);
-  const [sonarActive, setSonarActive] = useState<boolean>(false);
+  const [sonarActive, setSonarActive] = useState<boolean>(true);
+  const [scrollSpeed, setScrollSpeed] = useState<string>("normal");
+  const [syncInterval, setSyncInterval] = useState<number>(10);
 
   // State untuk panel analitis grafik visual
   const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
@@ -49,13 +52,15 @@ export default function DashboardPage() {
     }
   };
   
-  // State untuk melacak kapal yang diceklis (persisten via localStorage)
+  // State untuk melacak kapal yang diceklis & override uncheck
   const [checkedShips, setCheckedShips] = useState<Set<string>>(new Set());
+  const [uncheckedOverrides, setUncheckedOverrides] = useState<Set<string>>(new Set());
 
   // State untuk modal konfirmasi
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedShipKey, setSelectedShipKey] = useState<string>( "");
+  const [selectedShipKey, setSelectedShipKey] = useState<string>("");
   const [selectedShipName, setSelectedShipName] = useState<string>("");
+  const [selectedShipAction, setSelectedShipAction] = useState<string>("");
 
   // Cek apakah API URL masih menggunakan placeholder
   useEffect(() => {
@@ -65,19 +70,38 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Load status ceklis kapal dari localStorage saat pertama kali masuk (Client-side)
-  useEffect(() => {
-    const stored = localStorage.getItem("vts_checked_ships");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setCheckedShips(new Set(parsed));
-        }
-      } catch (e) {
-        console.error("Failed to parse checked ships from localStorage:", e);
+  // Fetch status arrived & override dari server database internal
+  const fetchArrivedStatus = async () => {
+    try {
+      const response = await fetch("/api/arrived");
+      if (response.ok) {
+        const result = await response.json();
+        setCheckedShips(new Set(result.arrivedKeys || []));
+        setUncheckedOverrides(new Set(result.undockedKeys || []));
       }
+    } catch (e) {
+      console.error("Failed to fetch arrived status:", e);
     }
+  };
+
+  // Load preferensi HUD dan fetch data awal
+  useEffect(() => {
+    // Jalankan preferensi client
+    const storedSonar = localStorage.getItem("vts_sonar_active");
+    if (storedSonar) setSonarActive(storedSonar === "true");
+
+    const storedScroll = localStorage.getItem("vts_scroll_speed");
+    if (storedScroll) setScrollSpeed(storedScroll);
+
+    const storedSync = localStorage.getItem("vts_sync_interval");
+    if (storedSync) {
+      const parsedInterval = parseInt(storedSync, 10);
+      setSyncInterval(parsedInterval);
+      setCountdown(parsedInterval);
+    }
+
+    // Fetch data arrived dari DB internal server
+    fetchArrivedStatus();
   }, []);
 
   // Fetch data kapal dari GAS sekali saja saat komponen di-load
@@ -92,16 +116,48 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  // Load status suara sonar dari localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("vts_sonar_active");
-    if (stored) {
-      setSonarActive(stored === "true");
+  // Fungsi helper manual sync
+  const handleManualSync = async () => {
+    setLoading(true);
+    try {
+      const shipData = await getShipData();
+      if (shipData && shipData.length > 0) {
+        setData(shipData);
+      }
+      await fetchArrivedStatus();
+    } catch (e) {
+      console.error("Manual sync error:", e);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // Auto-sync data secara berkala setiap 10 detik dengan countdown dan bunyi sonar
+  // HUD setters yang juga menyimpan ke localStorage
+  const changeScrollSpeed = (speed: string) => {
+    setScrollSpeed(speed);
+    localStorage.setItem("vts_scroll_speed", speed);
+  };
+
+  const changeSonarActive = (active: boolean) => {
+    setSonarActive(active);
+    localStorage.setItem("vts_sonar_active", String(active));
+  };
+
+  const changeSyncInterval = (interval: number) => {
+    setSyncInterval(interval);
+    localStorage.setItem("vts_sync_interval", String(interval));
+    setCountdown(interval);
+  };
+
+  // Auto-sync data berkala dengan interval dinamis & sonar detector
   useEffect(() => {
+    if (syncInterval === 0) {
+      // Mode Manual: timer dinonaktifkan
+      return;
+    }
+
+    setCountdown(syncInterval);
+
     const interval = setInterval(async () => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -118,30 +174,31 @@ export default function DashboardPage() {
                   return shipData;
                 });
               }
+              await fetchArrivedStatus();
             } catch (e) {
               console.error("Auto-sync error:", e);
             }
           };
           syncInBackground();
-          return 10;
+          return syncInterval;
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sonarActive]);
+  }, [sonarActive, syncInterval]);
 
   // Pancarkan event countdown auto-sync ke navbar
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("vts-sync-countdown", {
-          detail: { countdown, loading }
+          detail: { countdown: syncInterval === 0 ? null : countdown, loading }
         })
       );
     }
-  }, [countdown, loading]);
+  }, [countdown, loading, syncInterval]);
 
   // Listener ESC untuk menutup modal analitik
   useEffect(() => {
@@ -196,28 +253,77 @@ export default function DashboardPage() {
     return sortDates(dates);
   }, [data]);
 
-  // Fungsi pemicu klik checkbox (buka modal terlebih dahulu)
+  // Helper untuk mendeteksi apakah kapal telah melewati ETA
+  const isShipETAPassed = (shipKey: string) => {
+    const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === shipKey);
+    if (!ship) return false;
+    
+    const etaStr = ship["ETA_/_ETD_(LT)"];
+    if (!etaStr) return false;
+
+    const etaDatePart = etaStr.split(" ")[0];
+    const etaParts = etaDatePart.split("/");
+    if (etaParts.length < 3) return false;
+    const etaDay = parseInt(etaParts[0], 10);
+    const etaMonth = parseInt(etaParts[1], 10) - 1;
+    const etaYear = parseInt(etaParts[2], 10);
+
+    const etaDate = new Date(etaYear, etaMonth, etaDay);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return etaDate.getTime() <= today.getTime();
+  };
+
+  // Fungsi pemicu klik checkbox (tentukan aksi, lalu buka modal konfirmasi)
   const handleToggleCheckClick = (shipKey: string) => {
     const parts = shipKey.split("-");
     const shipName = parts.slice(1).join("-");
     
+    const isPassed = isShipETAPassed(shipKey);
+    const isCheckedInDb = checkedShips.has(shipKey);
+    const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+    const currentlyArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
+
+    let action = "";
+    if (currentlyArrived) {
+      // Ingin uncheck
+      if (isPassed) {
+        action = "uncheck_override"; // ETA sudah lewat, butuh override uncheck
+      } else {
+        action = "uncheck_manual"; // Belum lewat ETA, tinggal uncheck
+      }
+    } else {
+      // Ingin check
+      if (isPassed) {
+        action = "reset_override"; // Sudah lewat ETA tapi teroverride, kita reset biar tercentang lagi
+      } else {
+        action = "check"; // Belum lewat ETA, kita tandai tiba manual
+      }
+    }
+
     setSelectedShipKey(shipKey);
     setSelectedShipName(shipName);
+    setSelectedShipAction(action);
     setModalOpen(true);
   };
 
-  // Callback dari Modal untuk konfirmasi perubahan ceklis
-  const handleConfirmToggle = () => {
-    setCheckedShips(prev => {
-      const next = new Set(prev);
-      if (next.has(selectedShipKey)) {
-        next.delete(selectedShipKey);
-      } else {
-        next.add(selectedShipKey);
+  // Callback dari Modal untuk konfirmasi perubahan ceklis (POST ke server)
+  const handleConfirmToggle = async () => {
+    try {
+      const response = await fetch("/api/arrived", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shipKey: selectedShipKey, action: selectedShipAction }),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setCheckedShips(new Set(result.arrivedKeys || []));
+        setUncheckedOverrides(new Set(result.undockedKeys || []));
       }
-      localStorage.setItem("vts_checked_ships", JSON.stringify(Array.from(next)));
-      return next;
-    });
+    } catch (e) {
+      console.error("Failed to confirm arrived status update:", e);
+    }
     setModalOpen(false);
   };
 
@@ -540,16 +646,30 @@ export default function DashboardPage() {
         data={filteredData} 
         loading={loading} 
         checkedShips={checkedShips}
+        uncheckedOverrides={uncheckedOverrides}
         onToggleCheck={handleToggleCheckClick}
+        scrollSpeed={scrollSpeed}
       />
 
       {/* Modal Konfirmasi Ceklis */}
       <ConfirmationModal
         isOpen={modalOpen}
         shipName={selectedShipName}
-        isChecking={!checkedShips.has(selectedShipKey)}
+        isChecking={selectedShipAction === "check" || selectedShipAction === "reset_override"}
         onConfirm={handleConfirmToggle}
         onCancel={() => setModalOpen(false)}
+      />
+
+      {/* Panel Pengaturan HUD Melayang */}
+      <SettingsPanel
+        scrollSpeed={scrollSpeed}
+        setScrollSpeed={changeScrollSpeed}
+        sonarActive={sonarActive}
+        setSonarActive={changeSonarActive}
+        syncInterval={syncInterval}
+        setSyncInterval={changeSyncInterval}
+        onManualSync={handleManualSync}
+        isSyncing={loading}
       />
 
 
