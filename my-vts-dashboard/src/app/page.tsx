@@ -569,7 +569,7 @@ export default function DashboardPage() {
       )}
 
       {/* Filter & Kontrol Pencarian */}
-      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-border bg-card backdrop-blur-md transition-colors duration-300">
+      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-border bg-card backdrop-blur-md transition-colors duration-300 relative z-20">
         <div className="flex flex-col md:flex-row gap-6">
           <DateFilter 
             dates={availableDates} 
