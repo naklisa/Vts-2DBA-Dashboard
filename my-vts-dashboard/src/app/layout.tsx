@@ -54,10 +54,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300 font-sans">
-        {/* Ambient Glow Effects (VTS HUD Aesthetic) */}
+        {/* Ambient Glow & Watermark Logo Effects (VTS HUD Aesthetic) */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div className="absolute -top-[30%] -left-[10%] h-[70%] w-[50%] rounded-full bg-cyan-500/5 dark:bg-cyan-500/10 blur-[120px]"></div>
           <div className="absolute top-[30%] -right-[15%] h-[60%] w-[45%] rounded-full bg-teal-500/5 dark:bg-teal-500/10 blur-[100px]"></div>
+          
+          {/* Subtle Centered Background Watermark */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.04] transition-opacity duration-300">
+            <img src="/Logo.png" alt="Watermark VTS" className="w-[500px] h-[500px] max-w-[80vw] max-h-[80vh] object-contain select-none" />
+          </div>
         </div>
 
         {/* Top Navbar */}
@@ -100,13 +105,13 @@ export default function RootLayout({
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <main className="flex-1 w-full max-w-[95%] xl:max-w-[98%] mx-auto px-6 py-8 transition-all duration-300">
           {children}
         </main>
 
         {/* Footer */}
         <footer className="border-t border-border bg-background/30 py-6 transition-colors duration-300">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="max-w-[95%] xl:max-w-[98%] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
