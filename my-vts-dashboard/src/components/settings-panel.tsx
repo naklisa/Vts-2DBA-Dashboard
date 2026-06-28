@@ -69,7 +69,7 @@ export default function SettingsPanel({
   }, [isOpen]);
 
   return (
-    <div ref={panelRef} className="fixed bottom-6 right-20 z-50 flex items-center gap-3">
+    <div ref={panelRef} className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
       
       {/* Floating SystemStatus (Auto Sync pill) next to setting button */}
       <SystemStatus />

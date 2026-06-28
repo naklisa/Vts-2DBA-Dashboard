@@ -350,11 +350,11 @@ export default function DataTable({
                 if (isArrived) {
                   // Hijau untuk Kapal Tiba/Selesai (#27C840)
                   rowBgClass = "bg-[rgba(39,200,64,0.15)] hover:bg-[rgba(39,200,64,0.22)] text-emerald-950 dark:text-emerald-100";
-                  stickyBgClass = "bg-[#eafae7] dark:bg-[#072418] group-hover:opacity-90";
+                  stickyBgClass = "bg-[#eafae7] group-hover:bg-[#dff5dc] dark:bg-[#072418] dark:group-hover:bg-[#0c3825]";
                 } else if (isH1) {
                   // Kuning untuk Kapal H-1 (#FFCC00)
                   rowBgClass = "bg-[rgba(255,204,0,0.15)] hover:bg-[rgba(255,204,0,0.22)] text-amber-950 dark:text-amber-100";
-                  stickyBgClass = "bg-[#fffceb] dark:bg-[#211b05] group-hover:opacity-90";
+                  stickyBgClass = "bg-[#fffceb] group-hover:bg-[#fff9d6] dark:bg-[#211b05] dark:group-hover:bg-[#332b0c]";
                 }
 
                 return (
