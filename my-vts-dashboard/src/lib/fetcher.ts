@@ -47,6 +47,7 @@ export async function getShipData(): Promise<ShipData[]> {
     const data = await response.json();
     
     if (Array.isArray(data)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((item: any) => {
         // Cek jika field ETA / ETD (LT) adalah format ISO tanggal, bersihkan
         let etaVal = item.KOLOM_12 !== undefined ? String(item.KOLOM_12) : (item["ETA_/_ETD_(LT)"] || "");
@@ -61,7 +62,7 @@ export async function getShipData(): Promise<ShipData[]> {
               const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
               etaVal = `${day}/${month}/${year} ${hours}:${minutes} (LT)`;
             }
-          } catch (e) {
+          } catch {
             // Abaikan jika gagal parse
           }
         }

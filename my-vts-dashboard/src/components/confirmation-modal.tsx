@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface ConfirmationModalProps {
@@ -37,62 +39,63 @@ export default function ConfirmationModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onCancel}
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative overflow-hidden w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl transition-all animate-in fade-in zoom-in-95 duration-200">
-        {/* Warning Indicator Icon */}
-        <div className="flex items-center gap-4">
-          <div className={`rounded-full p-3 ${isChecking ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/30' : 'bg-rose-950/80 text-rose-400 border border-rose-800/30'}`}>
-            {isChecking ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            )}
-          </div>
-          <div>
-            <h3 className="text-base font-bold text-white">Konfirmasi Perubahan Status</h3>
-            <p className="text-xs text-zinc-400">Pemberitahuan penting untuk operator VTS</p>
+      <div className="relative overflow-hidden w-full max-w-lg rounded-[28px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 shadow-2xl transition-all animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Warning Indicator Header */}
+        <div className="flex items-start gap-4">
+          {/* Filled Red Triangle Exclamation SVG */}
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 text-[#EA3838] mt-0.5">
+            <path d="M12 2L1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z" fill="currentColor" />
+          </svg>
+          
+          <div className="flex-1">
+            <h3 className="text-xl font-extrabold text-black dark:text-white leading-tight font-sans">
+              Konfirmasi Perubahan Status
+            </h3>
+            
+            {/* Description Text with Color Status Highlights */}
+            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-350 mt-4 leading-relaxed font-sans">
+              Apakah anda yakin melakukan perubahan status kapal menjadi{" "}
+              {isChecking ? (
+                <span className="text-[#27C840] font-extrabold">telah tiba</span>
+              ) : (
+                <span className="text-[#EA3838] font-extrabold">belum / batal tiba</span>
+              )}{" "}
+              ?
+            </p>
           </div>
         </div>
 
-        <div className="mt-4">
-          <p className="text-sm text-zinc-300 leading-relaxed">
-            Apakah Anda yakin ingin mengubah status kedatangan kapal:
-          </p>
-          <div className="mt-2.5 rounded-xl bg-zinc-950 p-3 border border-zinc-800/50">
-            <p className="text-sm font-bold text-cyan-400 break-words">{shipName}</p>
-          </div>
-          <p className="text-xs text-zinc-550 mt-3.5">
-            Status baru:{" "}
-            <span className={`font-bold ${isChecking ? "text-emerald-400" : "text-rose-400"}`}>
-              {isChecking ? "Telah Tiba (Arrived)" : "Batal Tiba (Belum Datang)"}
-            </span>
+        {/* Black Container Box holding Ship Name in Blue font */}
+        <div className="mt-6 rounded-xl bg-black p-4 text-center select-all shadow-inner">
+          <p className="text-sm md:text-base font-extrabold text-primary break-words tracking-wide">
+            {shipName}
           </p>
         </div>
 
-        {/* Buttons Action */}
-        <div className="mt-6 flex justify-end gap-3">
+        {/* Buttons Action aligned bottom right */}
+        <div className="mt-8 flex justify-end gap-3.5">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-all cursor-pointer"
+            className="rounded-xl border border-zinc-200 dark:border-zinc-750 bg-white dark:bg-zinc-800 px-6 py-2.5 text-sm font-extrabold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-750 transition-colors duration-150 cursor-pointer shadow-sm"
           >
             Batal
           </button>
+          
           <button
             type="button"
             onClick={onConfirm}
-            className={`rounded-xl px-4 py-2.5 text-xs font-semibold text-white transition-all shadow-lg cursor-pointer ${isChecking
-              ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 hover:shadow-emerald-950/20"
-              : "bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 hover:shadow-rose-950/20"
-              }`}
+            className={`rounded-xl px-6 py-2.5 text-sm font-extrabold text-white transition-all shadow-md cursor-pointer ${
+              isChecking
+                ? "bg-[#27C840] hover:bg-[#22b339] hover:shadow-[#27C840]/20"
+                : "bg-[#EA3838] hover:bg-[#d62e2e] hover:shadow-[#EA3838]/20"
+            }`}
           >
             Ya, Ubah Status
           </button>

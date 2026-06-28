@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  --font-sans: 'Poppins', sans-serif;
   --background: #f8fafc; /* slate-50 */
   --foreground: #0f172a; /* slate-900 */
   --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -13,16 +15,16 @@
   --header-bg: #e2e8f0; /* slate-200 */
   
   /* Arrived Status (Soft Sage Green - Light Mode) */
-  --arrived-bg: rgba(240, 253, 244, 0.65);
-  --arrived-text: #166534;
-  --arrived-sticky-bg: #f0fdf4;
-  --arrived-sticky-hover-bg: #dcfce7;
+  --arrived-bg: rgba(39, 200, 64, 0.15);
+  --arrived-text: #27C840;
+  --arrived-sticky-bg: #eafae7;
+  --arrived-sticky-hover-bg: #d4f5d9;
   
   /* H-1 Status (Soft Amber/Yellow - Light Mode) */
-  --h1-bg: rgba(254, 243, 199, 0.5);
-  --h1-text: #92400e;
-  --h1-sticky-bg: #fef3c7;
-  --h1-sticky-hover-bg: #fde68a;
+  --h1-bg: rgba(255, 204, 0, 0.15);
+  --h1-text: #b38f00;
+  --h1-sticky-bg: #fffceb;
+  --h1-sticky-hover-bg: #fef6d2;
 }
 
 .dark {
@@ -36,19 +38,21 @@
   --header-bg: #020617; /* slate-950 */
   
   /* Arrived Status (Obsidian Mint - Dark Mode) */
-  --arrived-bg: rgba(16, 185, 129, 0.08);
-  --arrived-text: #34d399;
-  --arrived-sticky-bg: #061d16;
-  --arrived-sticky-hover-bg: #082f23;
+  --arrived-bg: rgba(39, 200, 64, 0.12);
+  --arrived-text: #27C840;
+  --arrived-sticky-bg: #072418;
+  --arrived-sticky-hover-bg: #0a3623;
   
   /* H-1 Status (Obsidian Amber - Dark Mode) */
-  --h1-bg: rgba(245, 158, 11, 0.08);
-  --h1-text: #fbbf24;
-  --h1-sticky-bg: #1e1402;
-  --h1-sticky-hover-bg: #2c1d03;
+  --h1-bg: rgba(255, 204, 0, 0.12);
+  --h1-text: #FFCC00;
+  --h1-sticky-bg: #211b05;
+  --h1-sticky-hover-bg: #302707;
 }
 
 @theme inline {
+  --font-sans: var(--font-sans);
+  --color-primary: #4379F2;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card-bg);

@@ -20,7 +20,7 @@ async function readData(): Promise<DataSchema> {
       arrivedKeys: Array.isArray(parsed.arrivedKeys) ? parsed.arrivedKeys : [],
       undockedKeys: Array.isArray(parsed.undockedKeys) ? parsed.undockedKeys : [],
     };
-  } catch (error) {
+  } catch {
     // Jika file tidak ada atau gagal parsing, kembalikan schema kosong
     return { arrivedKeys: [], undockedKeys: [] };
   }

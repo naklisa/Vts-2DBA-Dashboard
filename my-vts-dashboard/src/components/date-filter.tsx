@@ -45,23 +45,25 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
   // Sinkronisasi bulan/tahun tampilan kalender dengan tanggal terpilih
   useEffect(() => {
     const parsed = parseLogDate(selectedDate);
-    if (parsed) {
-      setCurrentMonth(parsed.month);
-      setCurrentYear(parsed.year);
-    } else if (dates && dates.length > 0) {
-      // Default: Buka bulan dari log data terbaru
-      const lastDate = dates[dates.length - 1];
-      const parsedLast = parseLogDate(lastDate);
-      if (parsedLast) {
-        setCurrentMonth(parsedLast.month);
-        setCurrentYear(parsedLast.year);
+    setTimeout(() => {
+      if (parsed) {
+        setCurrentMonth(parsed.month);
+        setCurrentYear(parsed.year);
+      } else if (dates && dates.length > 0) {
+        // Default: Buka bulan dari log data terbaru
+        const lastDate = dates[dates.length - 1];
+        const parsedLast = parseLogDate(lastDate);
+        if (parsedLast) {
+          setCurrentMonth(parsedLast.month);
+          setCurrentYear(parsedLast.year);
+        }
+      } else {
+        const now = new Date();
+        setCurrentMonth(now.getMonth());
+        setCurrentYear(now.getFullYear());
       }
-    } else {
-      const now = new Date();
-      setCurrentMonth(now.getMonth());
-      setCurrentYear(now.getFullYear());
-    }
-  }, [selectedDate]);
+    }, 0);
+  }, [selectedDate, dates]);
 
   // Efek klik di luar untuk menutup dropdown kalender
   useEffect(() => {
@@ -131,25 +133,25 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-2 min-w-[220px] relative z-30">
-      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-        Pilih Tanggal Log (2DBA)
+    <div ref={containerRef} className="flex flex-col gap-1.5 min-w-[220px] relative z-30">
+      <label className="text-black dark:text-zinc-300 text-sm md:text-base font-bold font-sans uppercase tracking-wider px-1">
+        PILIH TANGGAL LOG
       </label>
 
       {/* Tombol Pemicu Kalender */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-foreground outline-none transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer shadow-sm text-left focus:border-cyan-550 focus:ring-2 focus:ring-cyan-550/20"
+        className="w-full h-12 flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3 text-sm font-medium text-black dark:text-white outline-none transition-all hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer shadow-sm text-left focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 font-sans"
       >
         <span className="flex items-center gap-2">
           {/* Icon Kalender */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           {getTriggerText()}
         </span>
-        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
         </svg>
       </button>

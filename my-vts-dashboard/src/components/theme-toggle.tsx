@@ -8,11 +8,13 @@ export default function ThemeToggle() {
   useEffect(() => {
     // Jalankan di sisi klien saja
     const savedTheme = localStorage.getItem("vts_theme") as "light" | "dark" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      setTheme("dark");
-    }
+    setTimeout(() => {
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else {
+        setTheme("dark");
+      }
+    }, 0);
   }, []);
 
   const toggleTheme = () => {
