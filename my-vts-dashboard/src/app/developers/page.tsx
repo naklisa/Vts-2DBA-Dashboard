@@ -11,6 +11,7 @@ interface Developer {
   bio: string;
   github: string;
   linkedin: string;
+  instagram: string;
 }
 
 const developers: Developer[] = [
@@ -22,6 +23,7 @@ const developers: Developer[] = [
     bio: "Fokus pada integrasi arsitektur data, state management, dan sinkronisasi real-time data kapal.",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com",
   },
   {
     id: 2,
@@ -31,6 +33,7 @@ const developers: Developer[] = [
     bio: "Merancang desain HUD premium, konsistensi warna gelap/terang, dan micro-interactions antarmuka.",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com",
   },
   {
     id: 3,
@@ -40,6 +43,7 @@ const developers: Developer[] = [
     bio: "Bertanggung jawab atas implementasi antarmuka responsif, filtering data, dan optimasi komponen UI.",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com",
   },
   {
     id: 4,
@@ -49,6 +53,7 @@ const developers: Developer[] = [
     bio: "Mengelola integrasi API Google Sheets, konfigurasi deployment, serta optimasi performa query.",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
+    instagram: "https://instagram.com",
   },
 ];
 
@@ -143,7 +148,9 @@ export default function DevelopersPage() {
                 <div className="flex items-center gap-6 mt-8">
                   {/* Instagram */}
                   <a
-                    href="#"
+                    href={dev.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-zinc-900 dark:text-white hover:scale-120 transition-transform duration-200 cursor-pointer"
                     title="Instagram"
                   >

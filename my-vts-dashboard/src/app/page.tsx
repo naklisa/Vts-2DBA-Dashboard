@@ -318,11 +318,7 @@ export default function DashboardPage() {
       {/* Blue Header Banner - Stats and Title Section */}
       <div className="relative overflow-hidden -mx-6 md:-mx-12 xl:-mx-20 px-6 md:px-12 xl:px-20 py-8 bg-primary/10 dark:bg-primary/20 border-b border-zinc-200 dark:border-zinc-800/60 transition-colors duration-300">
         
-        {/* Subtle Watermark inside Banner */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/Logo.png" alt="Watermark Banner" className="w-[450px] h-[450px] object-contain select-none animate-[pulse_6s_ease-in-out_infinite]" />
-        </div>
+
 
         <div className="relative max-w-[1760px] mx-auto z-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
