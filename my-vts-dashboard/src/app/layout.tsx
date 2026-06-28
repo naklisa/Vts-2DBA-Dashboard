@@ -118,7 +118,7 @@ export default function RootLayout({
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
               </span>
               <span>
-                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> X <span className="text-foreground font-bold font-mono">KP IF ITERA 2026</span>
+                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> X <Link href="/developers" className="text-foreground hover:text-cyan-600 dark:hover:text-cyan-400 font-bold font-mono transition-colors duration-200 cursor-pointer">KP IF ITERA 2026</Link>
               </span>
             </div>
             <div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold font-mono">
