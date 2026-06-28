@@ -73,6 +73,11 @@ export default function ArrivedPage() {
     localStorage.setItem("vts_sonar_active", active ? "true" : "false");
   };
 
+  const changeScrollSpeed = (speed: string) => {
+    setScrollSpeed(speed);
+    localStorage.setItem("vts_scroll_speed", speed);
+  };
+
   const changeSyncInterval = (interval: number) => {
     setSyncInterval(interval);
     setCountdown(interval);
@@ -321,7 +326,7 @@ export default function ArrivedPage() {
           checkedShips={checkedShips}
           uncheckedOverrides={uncheckedOverrides}
           onToggleCheck={handleToggleCheckClick}
-          scrollSpeed="off"
+          scrollSpeed={scrollSpeed}
         />
       </div>
 
@@ -337,7 +342,7 @@ export default function ArrivedPage() {
       {/* Panel Pengaturan HUD Melayang */}
       <SettingsPanel
         scrollSpeed={scrollSpeed}
-        setScrollSpeed={setScrollSpeed}
+        setScrollSpeed={changeScrollSpeed}
         sonarActive={sonarActive}
         setSonarActive={changeSonarActive}
         syncInterval={syncInterval}
