@@ -347,7 +347,7 @@ export default function DashboardPage() {
       <div className="max-w-[1760px] mx-auto w-full flex flex-col gap-6 relative z-20">
 
         {/* Filter & Kontrol Pencarian */}
-        <div className="flex flex-col gap-4 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-slate-100/50 dark:bg-zinc-900/30 backdrop-blur-md transition-colors duration-300 relative z-20">
+        <div className="flex flex-col gap-4 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-slate-100/50 dark:bg-zinc-900/30 backdrop-blur-md transition-colors duration-300 relative z-40">
         <div className="flex flex-col md:flex-row gap-6">
           <DateFilter 
             dates={availableDates} 

@@ -103,7 +103,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
 
   // Logika pembuatan hari-hari dalam sebulan
   const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-  
+
   // Mencari hari pertama (0 = Sunday, 1 = Monday, dst) dan disesuaikan agar Senin = 0
   const firstDayOfWeekIndex = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7;
 
@@ -112,7 +112,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
     if (selectedDate === "Semua") return "Semua Tanggal";
     const parsed = parseLogDate(selectedDate);
     if (!parsed) return selectedDate;
-    
+
     // Tampilkan format ramah pembaca
     const monthFormatted = MONTH_NAMES[parsed.month].toLowerCase();
     const capitalizedMonth = monthFormatted.charAt(0).toUpperCase() + monthFormatted.slice(1);
@@ -135,7 +135,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
   return (
     <div ref={containerRef} className="flex flex-col gap-1.5 min-w-[220px] relative z-30">
       <label className="text-black dark:text-zinc-300 text-sm md:text-base font-bold font-sans uppercase tracking-wider px-1">
-        PILIH TANGGAL LOG
+        PILIH TANGGAL
       </label>
 
       {/* Tombol Pemicu Kalender */}
@@ -159,16 +159,15 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
       {/* Popover Kalender HUD */}
       {isOpen && (
         <div className="absolute top-[72px] left-0 z-50 w-72 rounded-2xl border border-border bg-zinc-950/95 text-zinc-150 p-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-150">
-          
+
           {/* Opsi Semua Tanggal */}
           <button
             type="button"
             onClick={handleSelectAll}
-            className={`w-full py-2 mb-3 rounded-lg text-xs font-bold uppercase transition-all duration-200 border cursor-pointer ${
-              selectedDate === "Semua"
+            className={`w-full py-2 mb-3 rounded-lg text-xs font-bold uppercase transition-all duration-200 border cursor-pointer ${selectedDate === "Semua"
                 ? "bg-cyan-500 text-zinc-950 border-cyan-400 font-extrabold shadow-md shadow-cyan-500/10"
                 : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-            }`}
+              }`}
           >
             Semua Tanggal
           </button>
@@ -184,7 +183,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            
+
             <span className="text-xs font-extrabold uppercase tracking-widest text-zinc-300">
               {MONTH_NAMES[currentMonth]} {currentYear}
             </span>
@@ -218,13 +217,13 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
             {Array.from({ length: totalDays }).map((_, idx) => {
               const day = idx + 1;
               const dateStr = toLogDate(day, currentMonth, currentYear);
-              
+
               const isSelected = selectedDate === dateStr;
               const hasData = dates.includes(dateStr);
 
               // Conditional Styling untuk sel tanggal
               let cellClass = "p-1.5 rounded-lg transition-all cursor-pointer relative font-semibold ";
-              
+
               if (isSelected) {
                 // Tanggal aktif terpilih
                 cellClass += "bg-cyan-500 text-zinc-950 font-extrabold shadow-md shadow-cyan-500/20 scale-105 z-10";
@@ -244,7 +243,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
                   className={cellClass}
                 >
                   {day}
-                  
+
                   {/* Indikator Titik Kecil Jika Ada Data dan Tidak Terpilih */}
                   {hasData && !isSelected && (
                     <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cyan-400"></span>

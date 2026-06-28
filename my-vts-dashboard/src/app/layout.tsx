@@ -77,7 +77,9 @@ export default function RootLayout({
         <footer className="relative z-30 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-5 transition-colors duration-300">
           <div className="max-w-[1760px] mx-auto px-6 flex justify-center items-center">
             <div className="text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-center">
-              Created By VTS PANJANG X <Link href="/developers" className="text-zinc-800 dark:text-white hover:text-primary dark:hover:text-primary font-extrabold underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-4 transition-colors duration-200 cursor-pointer">TEKNIK INFORMATIKA ITERA 2026</Link>
+              <span>
+                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> <span className="text-zinc-400 dark:text-zinc-600 mx-1">X</span> <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold font-mono transition-all duration-300 hover:scale-[1.04] active:scale-95 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]">TEKNIK INFORMATIKA ITERA 2026</Link>
+              </span>
             </div>
           </div>
         </footer>
