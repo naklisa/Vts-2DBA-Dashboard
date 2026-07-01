@@ -57,7 +57,7 @@ export default function RootLayout({
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div className="absolute -top-[30%] -left-[10%] h-[70%] w-[50%] rounded-full bg-cyan-500/5 dark:bg-cyan-500/10 blur-[120px]"></div>
           <div className="absolute top-[30%] -right-[15%] h-[60%] w-[45%] rounded-full bg-teal-500/5 dark:bg-teal-500/10 blur-[100px]"></div>
-          
+
           {/* Subtle Centered Background Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.04] transition-opacity duration-300">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -78,7 +78,7 @@ export default function RootLayout({
           <div className="max-w-[1760px] mx-auto px-6 flex justify-center items-center">
             <div className="text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-center">
               <span>
-                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> <span className="text-zinc-400 dark:text-zinc-600 mx-1">X</span> <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold font-mono transition-all duration-300 hover:scale-[1.04] active:scale-95 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]">TEKNIK INFORMATIKA ITERA 2026</Link>
+                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider"></span> <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold font-mono transition-all duration-300 hover:scale-[1.04] active:scale-95 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]">KELOMPOK KULIAH PRAKTIK TEKNIK INFORMATIKA ITERA 2026</Link>
               </span>
             </div>
           </div>

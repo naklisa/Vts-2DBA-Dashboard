@@ -21,9 +21,9 @@ const developers: Developer[] = [
     role: "Lead Fullstack Developer",
     image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80",
     bio: "Fokus pada integrasi arsitektur data, state management, dan sinkronisasi real-time data kapal.",
-    github: "https://github.com",
+    github: "https://github.com/naklisa",
     linkedin: "https://linkedin.com",
-    instagram: "https://instagram.com",
+    instagram: "https://www.instagram.com/xnahl_sr/",
   },
   {
     id: 2,
@@ -60,7 +60,7 @@ const developers: Developer[] = [
 export default function DevelopersPage() {
   return (
     <div className="relative min-h-[75vh] flex flex-col justify-center py-8">
-      
+
       {/* Header Halaman */}
       <div className="mb-12 text-center relative z-10">
         <Link
@@ -83,7 +83,7 @@ export default function DevelopersPage() {
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black dark:text-white uppercase font-sans">
           TIM PENGEMBANG
         </h2>
-        
+
         <p className="mt-4 max-w-3xl mx-auto text-base sm:text-lg text-zinc-750 dark:text-zinc-300 font-medium leading-relaxed px-4">
           Dibuat dengan dedikasi tinggi oleh tim kuliah praktik teknik informatika ITERA 2026 untuk mendukung operasional Vessel Traffic Service (VTS) Panjang.
         </p>
@@ -93,13 +93,13 @@ export default function DevelopersPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 max-w-7xl mx-auto w-full px-6 relative z-10">
         {developers.map((dev) => (
           <div key={dev.id} className="relative group w-full h-[470px]">
-            
+
             {/* 1. Background Outline Layer (rotates left on hover) */}
             <div className="absolute inset-0 rounded-[32px] border-4 border-sky-400 bg-transparent transition-all duration-500 group-hover:rotate-[-2.5deg] group-hover:scale-[1.02] shadow-[0px_4px_30px_rgba(0,194,255,0.25)] dark:shadow-none" />
 
             {/* 2. Main Card Layer (slides, scales, rotates right on hover) */}
             <div className="relative w-full h-full rounded-[32px] border-4 border-sky-400 dark:border-zinc-800 bg-sky-500 dark:bg-zinc-950 transition-all duration-500 overflow-hidden cursor-pointer group-hover:rotate-[2.5deg] group-hover:-translate-y-2 z-10 shadow-[0px_4px_30px_rgba(0,194,255,0.3)] dark:shadow-none hover:shadow-[0px_10px_50px_rgba(0,194,255,0.55)]">
-              
+
               {/* Coder Image Background (Visible by default) */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -107,7 +107,7 @@ export default function DevelopersPage() {
                 alt={dev.name}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              
+
               {/* Cyan overlay to tint the default photo background */}
               <div className="absolute inset-0 bg-sky-500/20 mix-blend-multiply transition-opacity duration-500 group-hover:opacity-0" />
 
@@ -126,18 +126,18 @@ export default function DevelopersPage() {
 
               {/* Hover State: Solid cyan panel sliding up */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#00c2ff] to-[#0055aa] dark:from-zinc-900 dark:to-zinc-950 transition-all duration-500 transform translate-y-full group-hover:translate-y-0 flex flex-col items-center justify-center p-6 text-center text-white z-20">
-                
+
                 <div className="flex flex-col items-center justify-center gap-3">
                   {/* Developer Name */}
                   <h3 className="text-xl font-extrabold uppercase tracking-wide leading-tight text-white drop-shadow-md">
                     {dev.name}
                   </h3>
-                  
+
                   {/* Developer Role */}
                   <p className="text-xs font-bold text-white/90 uppercase tracking-widest leading-none drop-shadow-sm">
                     {dev.role}
                   </p>
-                  
+
                   {/* Developer Bio */}
                   <p className="text-xs text-white mt-4 leading-relaxed font-normal px-2">
                     {dev.bio}
