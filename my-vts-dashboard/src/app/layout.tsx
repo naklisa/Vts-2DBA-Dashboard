@@ -78,7 +78,7 @@ export default function RootLayout({
           <div className="max-w-[1760px] mx-auto px-6 flex justify-center items-center">
             <div className="text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-center">
               <span>
-                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider"></span> <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold font-mono transition-all duration-300 hover:scale-[1.04] active:scale-95 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]">KELOMPOK KULIAH PRAKTIK TEKNIK INFORMATIKA ITERA 2026</Link>
+                Created By <span className="text-cyan-600 dark:text-cyan-400 font-bold tracking-wider">VTS PANJANG</span> <span className="text-zinc-400 dark:text-zinc-600 mx-1">X</span> <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold font-mono transition-all duration-300 hover:scale-[1.04] active:scale-95 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]">KP TEKNIK INFORMATIKA ITERA 2026</Link>
               </span>
             </div>
           </div>
