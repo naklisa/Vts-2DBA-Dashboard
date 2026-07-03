@@ -98,7 +98,7 @@ export async function getShipData(): Promise<ShipData[]> {
     
     return [];
   } catch (error) {
-    console.error("Error fetching ship data:", error);
+    console.error("Error fetching ship data:", error instanceof Error ? error.message : error);
     return [];
   }
 }
