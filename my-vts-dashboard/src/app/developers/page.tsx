@@ -125,7 +125,7 @@ export default function DevelopersPage() {
               </div>
 
               {/* Hover State: Solid cyan panel sliding up */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#00c2ff] to-[#0055aa] dark:from-zinc-900 dark:to-zinc-950 transition-all duration-500 transform translate-y-full group-hover:translate-y-0 flex flex-col items-center justify-center p-6 text-center text-white z-20">
+              <div className="absolute inset-0 bg-gradient-to-b from-[#00c2ff] to-[#0055aa] transition-all duration-500 transform translate-y-full group-hover:translate-y-0 flex flex-col items-center justify-center p-6 text-center text-white z-20">
 
                 <div className="flex flex-col items-center justify-center gap-3">
                   {/* Developer Name */}
