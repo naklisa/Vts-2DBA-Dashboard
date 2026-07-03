@@ -142,7 +142,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-12 flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3 text-sm font-medium text-black dark:text-white outline-none transition-all hover:bg-zinc-50 dark:hover:bg-zinc-850 cursor-pointer shadow-sm text-left focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 font-sans"
+        className="w-full h-12 flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-3 text-sm font-medium text-black dark:text-white outline-none transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer shadow-sm text-left focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 font-sans"
       >
         <span className="flex items-center gap-2">
           {/* Icon Kalender */}

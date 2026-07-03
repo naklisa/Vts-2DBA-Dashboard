@@ -95,6 +95,8 @@ export default function DashboardPage() {
     const storedScroll = localStorage.getItem("vts_scroll_speed");
     const storedSync = localStorage.getItem("vts_sync_interval");
 
+
+
     setTimeout(() => {
       if (storedSonar) setSonarActive(storedSonar === "true");
       if (storedScroll) setScrollSpeed(storedScroll);
@@ -316,7 +318,7 @@ export default function DashboardPage() {
       )}
 
       {/* Blue Header Banner - Stats and Title Section */}
-      <div className="relative overflow-hidden -mx-6 md:-mx-12 xl:-mx-20 px-6 md:px-12 xl:px-20 py-8 bg-primary/10 dark:bg-primary/20 border-b border-zinc-200 dark:border-zinc-800/60 transition-colors duration-300">
+      <div className="relative overflow-hidden -mt-8 -mx-6 md:-mx-12 xl:-mx-20 px-6 md:px-12 xl:px-20 py-8 bg-primary/10 dark:bg-primary/20 border-b border-zinc-200 dark:border-zinc-800/60 transition-colors duration-300">
         
 
 
@@ -357,18 +359,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Legenda Warna Baris */}
-        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-2 bg-background/50 p-3 rounded-xl border border-border transition-colors duration-300">
-          <span className="text-zinc-400 dark:text-zinc-500 uppercase tracking-wider text-[10px]">Legenda Baris Tabel:</span>
+        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-zinc-700 dark:text-zinc-300 mt-2 bg-background/50 p-3 rounded-xl border border-border transition-colors duration-300">
+          <span className="text-zinc-400 dark:text-zinc-500 uppercase tracking-wider text-[10px] font-extrabold">Legenda Baris Tabel:</span>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-arrived border border-emerald-500/40"></span>
-            <span>Hijau: Kapal Tiba / Selesai (Dicentang / ETA Lewat)</span>
+            <span className="h-3 w-3 rounded bg-[#27C840] shadow-sm"></span>
+            <span>Hijau: Kapal Tiba / Selesai</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-h1 border border-amber-500/40"></span>
+            <span className="h-3 w-3 rounded bg-[#FFCC00] shadow-sm"></span>
             <span>Kuning: Kapal H-1 Kedatangan</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded bg-sticky border border-border"></span>
+            <span className="h-3 w-3 rounded bg-zinc-200 dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-650 shadow-sm"></span>
             <span>Abu-abu / Terang: Normal (H-2 atau lebih)</span>
           </div>
         </div>

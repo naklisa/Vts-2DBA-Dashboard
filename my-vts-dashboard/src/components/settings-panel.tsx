@@ -104,7 +104,7 @@ export default function SettingsPanel({
                     className={`rounded-lg py-1.5 text-[10px] font-bold transition-all duration-200 cursor-pointer border ${
                       scrollSpeed === speed
                         ? "bg-primary border-primary text-white font-extrabold shadow-sm"
-                        : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-750"
+                        : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
                     }`}
                   >
                     {speed === "off" ? "Mati" : speed === "slow" ? "Lambat" : speed === "normal" ? "Sedang" : "Cepat"}
@@ -126,7 +126,7 @@ export default function SettingsPanel({
                     className={`rounded-lg py-1.5 text-[10px] font-bold transition-all duration-200 cursor-pointer border ${
                       syncInterval === secs
                         ? "bg-primary border-primary text-white font-extrabold shadow-sm"
-                        : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-750"
+                        : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
                     }`}
                   >
                     {secs === 0 ? "Manual" : `${secs}s`}

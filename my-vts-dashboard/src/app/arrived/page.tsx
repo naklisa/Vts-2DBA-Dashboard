@@ -256,7 +256,7 @@ export default function ArrivedPage() {
     <div className="flex flex-col gap-6">
       
       {/* Blue Header Banner - Stats and Title Section */}
-      <div className="relative overflow-hidden -mx-6 md:-mx-12 xl:-mx-20 px-6 md:px-12 xl:px-20 py-8 bg-primary/10 dark:bg-primary/20 border-b border-zinc-200 dark:border-zinc-800/60 transition-colors duration-300">
+      <div className="relative overflow-hidden -mt-8 -mx-6 md:-mx-12 xl:-mx-20 px-6 md:px-12 xl:px-20 py-8 bg-primary/10 dark:bg-primary/20 border-b border-zinc-200 dark:border-zinc-800/60 transition-colors duration-300">
         
 
 
@@ -294,25 +294,6 @@ export default function ArrivedPage() {
             />
           </div>
 
-          {/* Legenda Warna Baris */}
-          <div className="flex flex-wrap items-center gap-6 text-xs font-semibold text-zinc-500 dark:text-zinc-400 mt-2 bg-white dark:bg-zinc-900/60 p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
-            <span className="text-black dark:text-zinc-300 uppercase tracking-wider text-[11px] font-extrabold">LEGENDA BARIS TABEL:</span>
-            
-            <div className="flex items-center gap-2">
-              <span className="h-4.5 w-6 rounded bg-[rgba(39,200,64,0.15)] border border-[rgba(39,200,64,0.3)] shadow-sm"></span>
-              <span className="text-zinc-700 dark:text-zinc-300 font-medium">Hijau: Kapal Tiba / Melewati ETA</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="h-4.5 w-6 rounded bg-[rgba(255,204,0,0.15)] border border-[rgba(255,204,0,0.3)] shadow-sm"></span>
-              <span className="text-zinc-700 dark:text-zinc-300 font-medium">Kuning: H-1 Kedatangan</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="h-4.5 w-6 rounded bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm"></span>
-              <span className="text-zinc-700 dark:text-zinc-300 font-medium">Putih: H-2 / Lebih Kedatangan</span>
-            </div>
-          </div>
         </div>
 
         {/* Tabel Data Utama */}

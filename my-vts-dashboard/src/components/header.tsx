@@ -12,7 +12,7 @@ export default function Header() {
   const isArrivedActive = pathname === "/arrived";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md transition-colors duration-300 py-4 px-6 md:px-12 xl:px-20 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md transition-colors duration-300 py-4 px-6 md:px-12 xl:px-20 shadow-sm">
       <div className="max-w-[1760px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
         
         {/* Left Section: Logo & Titles */}

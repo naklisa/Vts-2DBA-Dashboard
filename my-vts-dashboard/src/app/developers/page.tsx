@@ -84,7 +84,7 @@ export default function DevelopersPage() {
           TIM PENGEMBANG
         </h2>
 
-        <p className="mt-4 max-w-3xl mx-auto text-base sm:text-lg text-zinc-750 dark:text-zinc-300 font-medium leading-relaxed px-4">
+        <p className="mt-4 max-w-3xl mx-auto text-base sm:text-lg text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed px-4">
           Dibuat dengan dedikasi tinggi oleh tim kuliah praktik teknik informatika ITERA 2026 untuk mendukung operasional Vessel Traffic Service (VTS) Panjang.
         </p>
       </div>

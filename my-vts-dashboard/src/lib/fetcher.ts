@@ -17,11 +17,16 @@ export interface ShipData {
   Tanggal_Log: string;
 }
 
+let hasWarnedAboutApiUrl = false;
+
 export async function getShipData(): Promise<ShipData[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   
   if (!apiUrl) {
-    console.error("Warning: NEXT_PUBLIC_API_URL is not defined in environment variables!");
+    if (!hasWarnedAboutApiUrl) {
+      console.error("Warning: NEXT_PUBLIC_API_URL is not defined in environment variables!");
+      hasWarnedAboutApiUrl = true;
+    }
     return [];
   }
 
