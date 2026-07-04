@@ -5,6 +5,7 @@ import { getShipData, ShipData } from "@/lib/fetcher";
 import VtsStats from "@/components/vts-stats";
 import DateFilter from "@/components/date-filter";
 import SearchBar from "@/components/search-bar";
+import StatusFilter from "@/components/status-filter";
 import DataTable from "@/components/data-table";
 import ConfirmationModal from "@/components/confirmation-modal";
 import SettingsPanel from "@/components/settings-panel";
@@ -15,6 +16,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"semua" | "belum-tiba">("semua");
   const [isApiConfigured, setIsApiConfigured] = useState<boolean>(true);
   
   // State untuk auto-sync countdown & suara sonar
@@ -284,15 +286,25 @@ export default function DashboardPage() {
     setModalOpen(false);
   };
 
-  // Saring data secara dinamis berdasarkan selectedDate & searchQuery
+  // Saring data secara dinamis berdasarkan selectedDate, searchQuery, & statusFilter
   const filteredData = useMemo(() => {
     return data.filter(ship => {
       const matchDate = selectedDate === "Semua" || ship.Tanggal_Log === selectedDate;
       const shipName = (ship["NAME_OF_SHIP/_CALL_SIGN"] || "").toLowerCase();
       const matchSearch = shipName.includes(searchQuery.toLowerCase());
-      return matchDate && matchSearch;
+      
+      // Deteksi status kedatangan kapal
+      const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
+      const isChecked = checkedShips.has(shipKey);
+      const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
+      const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+      const isArrived = isChecked || (isPassed && !isOverriddenUnchecked);
+      
+      const matchStatus = statusFilter === "semua" || !isArrived;
+      
+      return matchDate && matchSearch && matchStatus;
     });
-  }, [data, selectedDate, searchQuery]);
+  }, [data, selectedDate, searchQuery, statusFilter, checkedShips, uncheckedOverrides]);
 
 
 
@@ -352,6 +364,12 @@ export default function DashboardPage() {
             selectedDate={selectedDate} 
             onChange={setSelectedDate} 
           />
+          
+          <StatusFilter 
+            statusFilter={statusFilter}
+            onChange={setStatusFilter}
+          />
+
           <SearchBar 
             value={searchQuery} 
             onChange={setSearchQuery} 

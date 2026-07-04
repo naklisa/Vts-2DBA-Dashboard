@@ -43,7 +43,7 @@ export default function VtsStats({ filteredData }: VtsStatsProps) {
 
   return (
     <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 xl:gap-8 my-6">
-      
+
       {/* Card 1: Total Kapal Aktif */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 shadow-sm transition-all hover:scale-102 hover:shadow-md shrink-0">
         <span className="text-zinc-700 dark:text-zinc-300 text-[13px] md:text-sm font-extrabold uppercase tracking-wider font-sans leading-tight">
@@ -60,10 +60,10 @@ export default function VtsStats({ filteredData }: VtsStatsProps) {
         </div>
       </div>
 
-      {/* Card 2: Kapal Domestik */}
+      {/* Card 2: Kapal DALAM NEGERI */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 shadow-sm transition-all hover:scale-102 hover:shadow-md shrink-0">
         <span className="text-zinc-700 dark:text-zinc-300 text-[13px] md:text-sm font-extrabold uppercase tracking-wider font-sans leading-tight">
-          Kapal Domestik
+          Kapal Dalam Negeri
         </span>
         <div className="flex items-end justify-between w-full mt-auto">
           <span className="text-black dark:text-white text-4xl md:text-5xl font-extrabold font-sans leading-none">
@@ -71,15 +71,15 @@ export default function VtsStats({ filteredData }: VtsStatsProps) {
           </span>
           <div className="shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/stat-domestic.png" alt="Kapal Domestik" className="h-14 w-14 object-contain" />
+            <img src="/stat-nil-cargo.png" alt="Kapal DN" className="h-14 w-14 object-contain" />
           </div>
         </div>
       </div>
 
-      {/* Card 3: Kapal Internasional */}
+      {/* Card 3: Kapal LUAR NEGERI */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 shadow-sm transition-all hover:scale-102 hover:shadow-md shrink-0">
         <span className="text-zinc-700 dark:text-zinc-300 text-[13px] md:text-sm font-extrabold uppercase tracking-wider font-sans leading-tight">
-          Kapal Internasional
+          Kapal Luar Negeri
         </span>
         <div className="flex items-end justify-between w-full mt-auto">
           <span className="text-black dark:text-white text-4xl md:text-5xl font-extrabold font-sans leading-none">
@@ -87,7 +87,7 @@ export default function VtsStats({ filteredData }: VtsStatsProps) {
           </span>
           <div className="shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/stat-international.png" alt="Kapal Internasional" className="h-14 w-14 object-contain" />
+            <img src="/stat-international.png" alt="Kapal LN" className="h-14 w-14 object-contain" />
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function VtsStats({ filteredData }: VtsStatsProps) {
           </span>
           <div className="shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/stat-nil-cargo.png" alt="Nil Cargo" className="h-14 w-14 object-contain" />
+            <img src="/stat-domestic.png" alt="Nil Cargo" className="h-14 w-14 object-contain" />
           </div>
         </div>
       </div>

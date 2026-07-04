@@ -133,7 +133,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
   };
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-1.5 min-w-[220px] relative z-30">
+    <div ref={containerRef} className="flex flex-col gap-1.5 min-w-[220px] relative z-40">
       <label className="text-black dark:text-zinc-300 text-sm md:text-base font-bold font-sans uppercase tracking-wider px-1">
         PILIH TANGGAL
       </label>
@@ -158,15 +158,15 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
 
       {/* Popover Kalender HUD */}
       {isOpen && (
-        <div className="absolute top-[72px] left-0 z-50 w-72 rounded-2xl border border-border bg-zinc-950/95 text-zinc-150 p-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute top-[72px] left-0 z-50 w-72 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/95 text-zinc-850 dark:text-zinc-150 p-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-150">
 
           {/* Opsi Semua Tanggal */}
           <button
             type="button"
             onClick={handleSelectAll}
             className={`w-full py-2 mb-3 rounded-lg text-xs font-bold uppercase transition-all duration-200 border cursor-pointer ${selectedDate === "Semua"
-                ? "bg-cyan-500 text-zinc-950 border-cyan-400 font-extrabold shadow-md shadow-cyan-500/10"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                ? "bg-cyan-500 text-white dark:text-zinc-950 border-cyan-400 font-extrabold shadow-md shadow-cyan-500/10"
+                : "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white"
               }`}
           >
             Semua Tanggal
@@ -177,21 +177,21 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1 rounded-lg hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-800 text-zinc-400 hover:text-white cursor-pointer"
+              className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
-            <span className="text-xs font-extrabold uppercase tracking-widest text-zinc-300">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-zinc-800 dark:text-zinc-300">
               {MONTH_NAMES[currentMonth]} {currentYear}
             </span>
 
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1 rounded-lg hover:bg-zinc-900 border border-zinc-900 hover:border-zinc-800 text-zinc-400 hover:text-white cursor-pointer"
+              className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -200,7 +200,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
           </div>
 
           {/* Nama Hari */}
-          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-500 uppercase mb-1.5">
+          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase mb-1.5">
             {WEEKDAYS.map((day) => (
               <div key={day} className="py-1">{day}</div>
             ))}
@@ -226,13 +226,13 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
 
               if (isSelected) {
                 // Tanggal aktif terpilih
-                cellClass += "bg-cyan-500 text-zinc-950 font-extrabold shadow-md shadow-cyan-500/20 scale-105 z-10";
+                cellClass += "bg-cyan-500 text-white dark:text-zinc-950 font-extrabold shadow-md shadow-cyan-500/20 scale-105 z-10";
               } else if (hasData) {
                 // Ada data log (Cyan Border & Soft Bg)
-                cellClass += "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/25";
+                cellClass += "bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/30 dark:border-cyan-500/30 hover:bg-cyan-500/20 dark:hover:bg-cyan-500/25";
               } else {
-                // Kosong / Tidak ada data (Abu-abu redup)
-                cellClass += "text-zinc-600 dark:text-zinc-650 hover:bg-zinc-900/60 dark:hover:text-zinc-900/60 hover:text-zinc-200";
+                // Kosong / Tidak ada data
+                cellClass += "text-zinc-400 dark:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-black dark:hover:text-zinc-200";
               }
 
               return (
@@ -246,7 +246,7 @@ export default function DateFilter({ dates, selectedDate, onChange }: DateFilter
 
                   {/* Indikator Titik Kecil Jika Ada Data dan Tidak Terpilih */}
                   {hasData && !isSelected && (
-                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cyan-400"></span>
+                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cyan-500 dark:bg-cyan-400"></span>
                   )}
                 </button>
               );
