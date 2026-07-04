@@ -78,7 +78,7 @@ export default function RootLayout({
           <div className="max-w-[1760px] mx-auto px-6 flex justify-center items-center">
             <div className="text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-center flex items-center justify-center gap-1.5">
               <span>Created By</span>
-              <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold transition-all duration-300 hover:underline hover:underline-offset-4 hover:decoration-cyan-500 dark:hover:decoration-cyan-400 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)] hover:drop-shadow-[0_0_18px_rgba(6,182,212,0.55)]">KELOMPOK KP TEKNIK INFORMATIKA ITERA 2026</Link>
+              <span className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent font-extrabold">VTS PANJANG</span> X <Link href="/developers" className="inline-block bg-gradient-to-r from-cyan-500 to-teal-500 dark:from-cyan-400 dark:to-emerald-400 bg-clip-text text-transparent hover:from-blue-500 hover:to-cyan-400 dark:hover:from-blue-400 dark:hover:to-cyan-300 font-extrabold transition-all duration-300 hover:underline hover:underline-offset-4 hover:decoration-cyan-500 dark:hover:decoration-cyan-400 cursor-pointer drop-shadow-[0_0_12px_rgba(6,182,212,0.25)] hover:drop-shadow-[0_0_18px_rgba(6,182,212,0.55)]">KELOMPOK KP TEKNIK INFORMATIKA ITERA 2026</Link>
             </div>
           </div>
         </footer>
