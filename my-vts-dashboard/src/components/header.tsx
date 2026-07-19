@@ -56,7 +56,7 @@ export default function Header() {
                   : "text-black dark:text-zinc-400 hover:text-primary border-b-2 border-transparent"
               }`}
             >
-              Kapal Tiba
+              Arrival Status
             </Link>
           </nav>
 

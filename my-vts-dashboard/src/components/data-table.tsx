@@ -7,6 +7,7 @@ interface DataTableProps {
   loading: boolean;
   checkedShips: Set<string>;
   uncheckedOverrides: Set<string>;
+  declinedShips?: Set<string>;
   onToggleCheck: (key: string) => void;
   scrollSpeed?: string;
 }
@@ -52,6 +53,7 @@ export default function DataTable({
   loading,
   checkedShips,
   uncheckedOverrides,
+  declinedShips = new Set(),
   onToggleCheck,
   scrollSpeed = "normal",
 }: DataTableProps) {
@@ -200,7 +202,7 @@ export default function DataTable({
   };
 
   // Helper to render 2DBA Remark badge
-  const getRemark2DBABadge = (remark: string, isArrived: boolean) => {
+  const getRemark2DBABadge = (remark: string, isArrived: boolean, isDeclined: boolean = false) => {
     const rem = (remark || "").trim().toLowerCase();
     if (!rem || rem === "-") return <span className="text-zinc-400">-</span>;
 
@@ -234,6 +236,14 @@ export default function DataTable({
           <span className="mt-0.5">Before</span>
           <span className="mt-0.5">Arrival</span>
         </div>
+      );
+    }
+
+    if (isDeclined) {
+      return (
+        <span className="inline-flex items-center justify-center rounded-lg bg-[rgba(234,56,56,0.15)] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#EA3838] border border-[#EA3838]/30 min-w-[85px] leading-tight text-center">
+          {content}
+        </span>
       );
     }
 
@@ -339,15 +349,21 @@ export default function DataTable({
 
                 const isCheckedInDb = checkedShips.has(shipKey);
                 const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+                const isDeclined = declinedShips.has(shipKey);
 
                 // Kapal dianggap Tiba jika diceklis di DB ATAU (ETA sudah terlewat DAN tidak di-override uncheck)
-                const isArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
+                // DAN kapal tidak dibatalkan (decline)
+                const isArrived = !isDeclined && (isCheckedInDb || (isPassed && !isOverriddenUnchecked));
 
                 // Penentuan styling baris berdasarkan status kapal
                 let rowBgClass = "bg-white hover:bg-slate-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200";
                 let stickyBgClass = "bg-white group-hover:bg-slate-50 dark:bg-zinc-900 dark:group-hover:bg-zinc-800";
 
-                if (isArrived) {
+                if (isDeclined) {
+                  // Merah untuk Kapal Batal/Decline (#EA3838)
+                  rowBgClass = "bg-[rgba(234,56,56,0.15)] hover:bg-[rgba(234,56,56,0.22)] text-rose-955 dark:text-rose-100";
+                  stickyBgClass = "bg-[#fff5f5] group-hover:bg-[#ffe3e3] dark:bg-[#2c0f0f] dark:group-hover:bg-[#3f1616]";
+                } else if (isArrived) {
                   // Hijau untuk Kapal Tiba/Selesai (#27C840)
                   rowBgClass = "bg-[rgba(39,200,64,0.15)] hover:bg-[rgba(39,200,64,0.22)] text-emerald-950 dark:text-emerald-100";
                   stickyBgClass = "bg-[#eafae7] group-hover:bg-[#dff5dc] dark:bg-[#072418] dark:group-hover:bg-[#0c3825]";
@@ -368,12 +384,18 @@ export default function DataTable({
                         type="button"
                         onClick={() => onToggleCheck(shipKey)}
                         className="flex justify-center items-center w-full focus:outline-none cursor-pointer"
-                        title="Tandai kapal sudah tiba/selesai"
+                        title="Tandai status kapal"
                       >
                         {isArrived ? (
                           <div className="w-5 h-5 flex items-center justify-center rounded bg-[#27C840] border border-[#27C840] mx-auto shadow-sm">
                             <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        ) : isDeclined ? (
+                          <div className="w-5 h-5 flex items-center justify-center rounded bg-[#EA3838] border border-[#EA3838] mx-auto shadow-sm">
+                            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </div>
                         ) : (
@@ -394,11 +416,11 @@ export default function DataTable({
 
                     {/* Remark 2DBA */}
                     <td className="px-4 py-3 border border-zinc-200 dark:border-zinc-800 text-center">
-                      {getRemark2DBABadge(ship.Remark_2DBA, isArrived)}
+                      {getRemark2DBABadge(ship.Remark_2DBA, isArrived, isDeclined)}
                     </td>
 
                     {/* NAME OF SHIP / CALL SIGN - Sticky left-110 */}
-                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3 font-semibold sticky left-[110px] z-10 border border-zinc-200 dark:border-zinc-800 tracking-wide transition-colors duration-300 whitespace-normal break-words leading-relaxed ${stickyBgClass} ${isArrived ? 'text-emerald-800 dark:text-emerald-300 font-bold' : isH1 ? 'text-amber-800 dark:text-amber-300 font-bold' : 'text-black dark:text-white'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
+                    <td className={`w-[240px] min-w-[240px] max-w-[240px] px-5 py-3 font-semibold sticky left-[110px] z-10 border border-zinc-200 dark:border-zinc-800 tracking-wide transition-colors duration-300 whitespace-normal break-words leading-relaxed ${stickyBgClass} ${isDeclined ? 'text-rose-800 dark:text-rose-300 font-bold' : isArrived ? 'text-emerald-800 dark:text-emerald-300 font-bold' : isH1 ? 'text-amber-800 dark:text-amber-300 font-bold' : 'text-black dark:text-white'}`} title={ship["NAME_OF_SHIP/_CALL_SIGN"]}>
                       {formatShipName(ship["NAME_OF_SHIP/_CALL_SIGN"])}
                     </td>
 

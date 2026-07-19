@@ -19,7 +19,7 @@ const developers: Developer[] = [
     id: 1,
     name: "Nahli Saud Ramdani",
     role: "Lead Fullstack Developer",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80",
+    image: "/Nahli.jpeg",
     bio: "Fokus pada integrasi arsitektur data, state management, dan sinkronisasi real-time data kapal.",
     github: "https://github.com/naklisa",
     linkedin: "https://linkedin.com",
@@ -34,26 +34,6 @@ const developers: Developer[] = [
     github: "https://github.com/Iyann134",
     linkedin: "https://www.linkedin.com/in/gian-ivander-9a2523311/?skipRedirect=true",
     instagram: "https://www.instagram.com/gian.ivdr/",
-  },
-  {
-    id: 3,
-    name: "Muhammad Dzaky",
-    role: "Frontend Engineer",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-    bio: "Bertanggung jawab atas implementasi antarmuka responsif, filtering data, dan optimasi komponen UI.",
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    instagram: "https://instagram.com",
-  },
-  {
-    id: 4,
-    name: "Danar Prayogo",
-    role: "DevOps & API Specialist",
-    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=400&q=80",
-    bio: "Mengelola integrasi API Google Sheets, konfigurasi deployment, serta optimasi performa query.",
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    instagram: "https://instagram.com",
   },
 ];
 
@@ -90,7 +70,7 @@ export default function DevelopersPage() {
       </div>
 
       {/* Grid Tim Pengembang */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 max-w-7xl mx-auto w-full px-6 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 max-w-3xl mx-auto w-full px-6 relative z-10">
         {developers.map((dev) => (
           <div key={dev.id} className="relative group w-full h-[470px]">
 

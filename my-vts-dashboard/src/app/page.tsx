@@ -56,15 +56,15 @@ export default function DashboardPage() {
     }
   };
   
-  // State untuk melacak kapal yang diceklis & override uncheck
+  // State untuk melacak kapal yang diceklis, override uncheck, & batal (declined)
   const [checkedShips, setCheckedShips] = useState<Set<string>>(new Set());
   const [uncheckedOverrides, setUncheckedOverrides] = useState<Set<string>>(new Set());
+  const [declinedShips, setDeclinedShips] = useState<Set<string>>(new Set());
 
   // State untuk modal konfirmasi
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedShipKey, setSelectedShipKey] = useState<string>("");
   const [selectedShipName, setSelectedShipName] = useState<string>("");
-  const [selectedShipAction, setSelectedShipAction] = useState<string>("");
 
   // Cek apakah API URL masih menggunakan placeholder
   useEffect(() => {
@@ -84,6 +84,7 @@ export default function DashboardPage() {
         const result = await response.json();
         setCheckedShips(new Set(result.arrivedKeys || []));
         setUncheckedOverrides(new Set(result.undockedKeys || []));
+        setDeclinedShips(new Set(result.declinedKeys || []));
       }
     } catch (e) {
       console.error("Failed to fetch arrived status:", e);
@@ -234,54 +235,42 @@ export default function DashboardPage() {
     return ship ? isETAPassed(ship["ETA_/_ETD_(LT)"]) : false;
   };
 
-  // Fungsi pemicu klik checkbox (tentukan aksi, lalu buka modal konfirmasi)
+  // Fungsi pemicu klik checkbox (buka modal konfirmasi status)
   const handleToggleCheckClick = (shipKey: string) => {
     const parts = shipKey.split("-");
     const shipName = parts.slice(1).join("-");
-    
-    const isPassed = isShipETAPassed(shipKey);
-    const isCheckedInDb = checkedShips.has(shipKey);
-    const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
-    const currentlyArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
-
-    let action = "";
-    if (currentlyArrived) {
-      // Ingin uncheck
-      if (isPassed) {
-        action = "uncheck_override"; // ETA sudah lewat, butuh override uncheck
-      } else {
-        action = "uncheck_manual"; // Belum lewat ETA, tinggal uncheck
-      }
-    } else {
-      // Ingin check
-      if (isPassed) {
-        action = "reset_override"; // Sudah lewat ETA tapi teroverride, kita reset biar tercentang lagi
-      } else {
-        action = "check"; // Belum lewat ETA, kita tandai tiba manual
-      }
-    }
 
     setSelectedShipKey(shipKey);
     setSelectedShipName(shipName);
-    setSelectedShipAction(action);
     setModalOpen(true);
   };
 
-  // Callback dari Modal untuk konfirmasi perubahan ceklis (POST ke server)
-  const handleConfirmToggle = async () => {
+  // Callback dari Modal untuk konfirmasi perubahan status (POST ke server)
+  const handleSelectAction = async (actionType: "arrived" | "declined" | "normal") => {
+    const isPassed = isShipETAPassed(selectedShipKey);
+    let action = "";
+    if (actionType === "arrived") {
+      action = isPassed ? "reset_override" : "check";
+    } else if (actionType === "declined") {
+      action = "decline";
+    } else if (actionType === "normal") {
+      action = isPassed ? "uncheck_override" : "uncheck_manual";
+    }
+
     try {
       const response = await fetch("/api/arrived", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shipKey: selectedShipKey, action: selectedShipAction }),
+        body: JSON.stringify({ shipKey: selectedShipKey, action }),
       });
       if (response.ok) {
         const result = await response.json();
         setCheckedShips(new Set(result.arrivedKeys || []));
         setUncheckedOverrides(new Set(result.undockedKeys || []));
+        setDeclinedShips(new Set(result.declinedKeys || []));
       }
     } catch (e) {
-      console.error("Failed to confirm arrived status update:", e);
+      console.error("Failed to confirm status update:", e);
     }
     setModalOpen(false);
   };
@@ -298,13 +287,14 @@ export default function DashboardPage() {
       const isChecked = checkedShips.has(shipKey);
       const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
       const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
-      const isArrived = isChecked || (isPassed && !isOverriddenUnchecked);
+      const isDeclined = declinedShips.has(shipKey);
+      const isArrived = !isDeclined && (isChecked || (isPassed && !isOverriddenUnchecked));
       
-      const matchStatus = statusFilter === "semua" || !isArrived;
+      const matchStatus = statusFilter === "semua" || (!isArrived && !isDeclined);
       
       return matchDate && matchSearch && matchStatus;
     });
-  }, [data, selectedDate, searchQuery, statusFilter, checkedShips, uncheckedOverrides]);
+  }, [data, selectedDate, searchQuery, statusFilter, checkedShips, uncheckedOverrides, declinedShips]);
 
 
 
@@ -388,6 +378,10 @@ export default function DashboardPage() {
             <span>Kuning: Kapal H-1 Kedatangan</span>
           </div>
           <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded bg-[#EA3838] shadow-sm"></span>
+            <span>Merah: Batal / Tidak Jadi Sandar</span>
+          </div>
+          <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded bg-zinc-200 dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-650 shadow-sm"></span>
             <span>Abu-abu / Terang: Normal (H-2 atau lebih)</span>
           </div>
@@ -400,6 +394,7 @@ export default function DashboardPage() {
           loading={loading} 
           checkedShips={checkedShips}
           uncheckedOverrides={uncheckedOverrides}
+          declinedShips={declinedShips}
           onToggleCheck={handleToggleCheckClick}
           scrollSpeed={scrollSpeed}
         />
@@ -409,8 +404,7 @@ export default function DashboardPage() {
       <ConfirmationModal
         isOpen={modalOpen}
         shipName={selectedShipName}
-        isChecking={selectedShipAction === "check" || selectedShipAction === "reset_override"}
-        onConfirm={handleConfirmToggle}
+        onSelectAction={handleSelectAction}
         onCancel={() => setModalOpen(false)}
       />
 

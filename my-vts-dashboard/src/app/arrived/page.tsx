@@ -9,17 +9,20 @@ import SearchBar from "@/components/search-bar";
 import DataTable from "@/components/data-table";
 import ConfirmationModal from "@/components/confirmation-modal";
 import SettingsPanel from "@/components/settings-panel";
+import ArrivalStatusFilter from "@/components/arrival-status-filter";
 
 export default function ArrivedPage() {
   const [data, setData] = useState<ShipData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDate, setSelectedDate] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"semua" | "tiba" | "batal">("semua");
   
   // State untuk auto-sync countdown & status
   const [countdown, setCountdown] = useState<number>(10);
   const [checkedShips, setCheckedShips] = useState<Set<string>>(new Set());
   const [uncheckedOverrides, setUncheckedOverrides] = useState<Set<string>>(new Set());
+  const [declinedShips, setDeclinedShips] = useState<Set<string>>(new Set());
   const [syncInterval, setSyncInterval] = useState<number>(10);
 
   // State untuk settings panel
@@ -30,7 +33,6 @@ export default function ArrivedPage() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedShipKey, setSelectedShipKey] = useState<string>("");
   const [selectedShipName, setSelectedShipName] = useState<string>("");
-  const [selectedShipAction, setSelectedShipAction] = useState<string>("");
 
   // Fetch status arrived & override dari database internal
   const fetchArrivedStatus = async () => {
@@ -40,6 +42,7 @@ export default function ArrivedPage() {
         const result = await response.json();
         setCheckedShips(new Set(result.arrivedKeys || []));
         setUncheckedOverrides(new Set(result.undockedKeys || []));
+        setDeclinedShips(new Set(result.declinedKeys || []));
       }
     } catch (e) {
       console.error("Failed to fetch arrived status:", e);
@@ -171,26 +174,43 @@ export default function ArrivedPage() {
     return sortDates(dates);
   }, [data]);
 
-  // Saring semua kapal yang berstatus arrived
-  const arrivedShips = useMemo(() => {
+  // Saring semua kapal yang berstatus arrived (Tiba) atau declined (Batal)
+  const completedShips = useMemo(() => {
     return data.filter(ship => {
       const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
       const isChecked = checkedShips.has(shipKey);
       const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
       const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
-      return isChecked || (isPassed && !isOverriddenUnchecked);
+      const isDeclined = declinedShips.has(shipKey);
+      const isArrived = !isDeclined && (isChecked || (isPassed && !isOverriddenUnchecked));
+      return isArrived || isDeclined;
     });
-  }, [data, checkedShips, uncheckedOverrides]);
+  }, [data, checkedShips, uncheckedOverrides, declinedShips]);
 
-  // Saring berdasarkan tanggal & pencarian input
-  const filteredArrivedShips = useMemo(() => {
-    return arrivedShips.filter(ship => {
+  // Saring berdasarkan tanggal & pencarian input & filter status kedatangan
+  const filteredCompletedShips = useMemo(() => {
+    return completedShips.filter(ship => {
       const matchDate = selectedDate === "Semua" || ship.Tanggal_Log === selectedDate;
       const shipName = (ship["NAME_OF_SHIP/_CALL_SIGN"] || "").toLowerCase();
       const matchSearch = shipName.includes(searchQuery.toLowerCase());
-      return matchDate && matchSearch;
+      
+      const shipKey = `${ship.Tanggal_Log}-${ship["NAME_OF_SHIP/_CALL_SIGN"]}`;
+      const isChecked = checkedShips.has(shipKey);
+      const isPassed = isETAPassed(ship["ETA_/_ETD_(LT)"]);
+      const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
+      const isDeclined = declinedShips.has(shipKey);
+      const isArrived = !isDeclined && (isChecked || (isPassed && !isOverriddenUnchecked));
+      
+      let matchStatus = true;
+      if (statusFilter === "tiba") {
+        matchStatus = isArrived;
+      } else if (statusFilter === "batal") {
+        matchStatus = isDeclined;
+      }
+      
+      return matchDate && matchSearch && matchStatus;
     });
-  }, [arrivedShips, selectedDate, searchQuery]);
+  }, [completedShips, selectedDate, searchQuery, statusFilter, checkedShips, uncheckedOverrides, declinedShips]);
 
   // Untuk stats card: tampilkan data sesuai tanggal log yang dipilih
   const statsData = useMemo(() => {
@@ -204,47 +224,36 @@ export default function ArrivedPage() {
   const handleToggleCheckClick = (shipKey: string) => {
     const parts = shipKey.split("-");
     const shipName = parts.slice(1).join("-");
-    
-    // Cari status kapal
-    const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === shipKey);
-    const isPassed = ship ? isETAPassed(ship["ETA_/_ETD_(LT)"]) : false;
-    const isCheckedInDb = checkedShips.has(shipKey);
-    const isOverriddenUnchecked = uncheckedOverrides.has(shipKey);
-    const currentlyArrived = isCheckedInDb || (isPassed && !isOverriddenUnchecked);
-
-    let action = "";
-    if (currentlyArrived) {
-      if (isPassed) {
-        action = "uncheck_override";
-      } else {
-        action = "uncheck_manual";
-      }
-    } else {
-      if (isPassed) {
-        action = "reset_override";
-      } else {
-        action = "check";
-      }
-    }
 
     setSelectedShipKey(shipKey);
     setSelectedShipName(shipName);
-    setSelectedShipAction(action);
     setModalOpen(true);
   };
 
-  // Konfirmasi perubahan ceklis dengan memanggil API server
-  const handleConfirmToggle = async () => {
+  // Callback dari Modal untuk konfirmasi perubahan status (POST ke server)
+  const handleSelectAction = async (actionType: "arrived" | "declined" | "normal") => {
+    const ship = data.find(s => `${s.Tanggal_Log}-${s["NAME_OF_SHIP/_CALL_SIGN"]}` === selectedShipKey);
+    const isPassed = ship ? isETAPassed(ship["ETA_/_ETD_(LT)"]) : false;
+    let action = "";
+    if (actionType === "arrived") {
+      action = isPassed ? "reset_override" : "check";
+    } else if (actionType === "declined") {
+      action = "decline";
+    } else if (actionType === "normal") {
+      action = isPassed ? "uncheck_override" : "uncheck_manual";
+    }
+
     try {
       const response = await fetch("/api/arrived", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shipKey: selectedShipKey, action: selectedShipAction }),
+        body: JSON.stringify({ shipKey: selectedShipKey, action }),
       });
       if (response.ok) {
         const result = await response.json();
         setCheckedShips(new Set(result.arrivedKeys || []));
         setUncheckedOverrides(new Set(result.undockedKeys || []));
+        setDeclinedShips(new Set(result.declinedKeys || []));
       }
     } catch (e) {
       console.error("Failed to update status on server:", e);
@@ -264,10 +273,10 @@ export default function ArrivedPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-black dark:text-white font-sans">
-                Kapal Tiba Monitoring
+                Status Kedatangan Kapal
               </h2>
               <p className="text-sm text-zinc-555 dark:text-zinc-400 mt-1">
-                Pantau pergerakan kapal 2 hari sebelum kedatangan (2 Days Before Arrival).
+                Pantau pergerakan kapal yang telah tiba (selesai) maupun batal sandar.
               </p>
             </div>
           </div>
@@ -288,6 +297,10 @@ export default function ArrivedPage() {
               selectedDate={selectedDate} 
               onChange={setSelectedDate} 
             />
+            <ArrivalStatusFilter
+              statusFilter={statusFilter}
+              onChange={setStatusFilter}
+            />
             <SearchBar 
               value={searchQuery} 
               onChange={setSearchQuery} 
@@ -298,10 +311,11 @@ export default function ArrivedPage() {
 
         {/* Tabel Data Utama */}
         <DataTable 
-          data={filteredArrivedShips} 
+          data={filteredCompletedShips} 
           loading={loading} 
           checkedShips={checkedShips}
           uncheckedOverrides={uncheckedOverrides}
+          declinedShips={declinedShips}
           onToggleCheck={handleToggleCheckClick}
           scrollSpeed={scrollSpeed}
         />
@@ -311,8 +325,7 @@ export default function ArrivedPage() {
       <ConfirmationModal
         isOpen={modalOpen}
         shipName={selectedShipName}
-        isChecking={selectedShipAction === "check" || selectedShipAction === "reset_override"}
-        onConfirm={handleConfirmToggle}
+        onSelectAction={handleSelectAction}
         onCancel={() => setModalOpen(false)}
       />
 
