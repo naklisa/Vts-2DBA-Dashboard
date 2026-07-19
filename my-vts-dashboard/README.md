@@ -233,10 +233,6 @@ Dibuat dengan dedikasi tinggi oleh **KELOMPOK KP TEKNIK INFORMATIKA ITERA 2026**
   * Integrasi arsitektur data, state management, dan sinkronisasi real-time data kapal.
 * **Gian Ivander** - *UI / UX Designer* 🎨
   * Perancangan desain HUD premium, konsistensi warna gelap/terang, dan micro-interactions antarmuka.
-* **Muhammad Dzaky** - *Frontend Engineer* 🚀
-  * Implementasi antarmuka responsif, filtering data, dan optimasi komponen UI.
-* **Danar Prayogo** - *DevOps & API Specialist* ⚙️
-  * Manajemen integrasi API Google Sheets, konfigurasi deployment, serta optimasi query.
 
 ---
 *KELOMPOK KP TEKNIK INFORMATIKA ITERA 2026*
